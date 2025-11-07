@@ -17,4 +17,14 @@ public class HomeController {
     public String order_history() {
         return "order_history";
     }
+
+    @GetMapping("/test")
+    public String test() {
+        return "test";
+    }
+
+    @GetMapping("/admin_history")
+    public String admin_order_history() {
+        return "admin_order_list";
+    }
 }
