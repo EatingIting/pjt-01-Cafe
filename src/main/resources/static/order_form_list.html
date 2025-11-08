@@ -91,8 +91,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        // (중요) 실제 백엔드 주문 생성 API 엔드포인트
-        // (iFrame 환경을 위해 전체 경로 사용)
         const CREATE_API_ENDPOINT = 'http://localhost:8383/api/orders/create';
 
         const statusMessage = document.getElementById('status-message');
@@ -101,27 +99,21 @@
         document.getElementById('btn-takeout').addEventListener('click', () => sendTestOrder('포장'));
         document.getElementById('btn-delivery').addEventListener('click', () => sendTestOrder('배달'));
 
-        /**
-         * 테스트용 주문 데이터를 생성하여 서버로 POST 요청을 보냅니다.
-         * @param {string} orderType - '매장', '포장', '배달'
-         */
         async function sendTestOrder(orderType) {
 
-            // (수정) orderTime에 '15:40' 대신 new Date() 객체를 전송합니다.
-            // Spring+MyBatis가 이 Date 객체를 DB의 DATETIME 컬럼 타입에 맞게
-            // 자동으로 변환해줍니다.
+            // [수정] testOrderData에서 orderId 라인을 삭제합니다.
+            // DB가 AUTO_INCREMENT로 orderId를 생성하도록 합니다.
             const testOrderData = {
-                orderId: `TEST-${Math.floor(1000 + Math.random() * 9000)}`,
-                orderTime: new Date(), // (중요) 현재 날짜와 시간 전송
+                // orderId: `TEST-${Math.floor(1000 + Math.random() * 9000)}`, // (이 라인 삭제)
+                orderTime: new Date(), // DATETIME 전송을 위해 Date 객체 사용
                 totalQuantity: 2,
                 totalPrice: 8500,
                 orderType: orderType,
+                orderStatus: null, // [수정] '주문접수' 상태는 NULL로 전송
                 orderItemList: [
                     { menuItemName: "테스트 아메리카노", quantity: 1 },
                     { menuItemName: "테스트 케이크", quantity: 1 }
                 ]
-                // (참고: uId, orderStatus는 OrderVO에 있지만 여기서 보내지 않으면
-                //  DB에 null로 저장됩니다. 필요시 ServiceImpl에서 기본값을 설정해야 합니다.)
             };
 
             statusMessage.textContent = '주문 생성 중...';
@@ -142,7 +134,8 @@
 
                 const result = await response.json();
 
-                statusMessage.textContent = `[성공] 주문번호 ${result.orderId || testOrderData.orderId} 생성 완료!`;
+                // [수정] DB가 생성해준 orderId(숫자)를 표시합니다.
+                statusMessage.textContent = `[성공] 주문번호 #${String(result.orderId).padStart(4, '0')} 생성 완료!`;
                 statusMessage.className = 'status-success';
                 console.log('주문 생성 성공:', result);
 

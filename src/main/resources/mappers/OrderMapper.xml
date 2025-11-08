@@ -5,54 +5,63 @@
 
 <mapper namespace="com.miniproject.cafe.Mapper.OrderMapper">
 
-    <select id="findOrderById" resultType="com.miniproject.cafe.VO.OrderVO" parameterType="String">
-        SELECT
-            order_id,
-            u_id,
-            order_status,
-            total_price,
-            pickup_method as orderType,
-            order_time,
-            TOTAL_QUANTITY as totalQuantity
-        FROM
-            orders
-        WHERE
-            order_id = #{id}
-    </select>
-
+    <!-- 일일 주문 번호 계산하는 서브쿼리절 -->
     <select id="findAllAdminOrders" resultType="com.miniproject.cafe.VO.OrderVO">
         SELECT
-            order_id,
-            u_id,
-            order_status,
-            total_price,
-            pickup_method as orderType,
-            order_time,
-            TOTAL_QUANTITY as totalQuantity
-        FROM
-            orders
-        ORDER BY
-            order_id DESC
-    </select>
-
-    <insert id="insertOrder" parameterType="com.miniproject.cafe.VO.OrderVO">
-        INSERT INTO ORDERS (
+        T.*
+        FROM (
+            <!-- 일일 주문 번호 계산 -->
+        SELECT
         order_id,
         u_id,
         order_status,
         total_price,
-        pickup_method,
+        pickup_method as orderType,
         order_time,
-        TOTAL_QUANTITY
-        ) VALUES (
-        #{orderId},
-        #{uId},
-        #{orderStatus},
-        #{totalPrice},
-        #{orderType},
-        #{orderTime},
-        #{totalQuantity}
+        total_quantity,
+
+        <!-- 날짜가 바뀔때마다 order_num 계산 -->
+        ROW_NUMBER() OVER (
+        PARTITION BY DATE(order_time)
+        ORDER BY order_time ASC
+        ) as daily_order_num
+        FROM
+        orders
+        ) AS T
+        WHERE
+        T.order_status IS NULL
+        ORDER BY
+        T.order_time DESC;
+    </select>
+
+
+    <insert id="insertOrder" parameterType="com.miniproject.cafe.VO.OrderVO"
+            useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO orders (
+            u_id,
+            order_status,
+            total_price,
+            pickup_method,
+            order_time,
+            total_quantity
         )
+        VALUES (
+                   #{uId},
+                   #{orderStatus},
+                   #{totalPrice},
+                   #{orderType},
+                   #{orderTime},
+                   #{totalQuantity}
+               )
     </insert>
+
+
+    <update id="updateOrderStatus">
+        UPDATE orders
+        SET
+            order_status = #{status}
+        WHERE
+            order_id = #{orderId}
+    </update>
 
 </mapper>

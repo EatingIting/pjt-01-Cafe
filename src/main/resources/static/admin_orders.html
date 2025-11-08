@@ -22,7 +22,7 @@
             background-color: #F5F0E8; /* bg-light-beige */
             color: #6B4F3B; /* text-main-brown */
             line-height: 1.5;
-            overflow-x: hidden; /* (추가) 뷰포트 가로 스크롤 방지 */
+            overflow-x: hidden;
         }
 
         a {
@@ -33,14 +33,11 @@
         /* --- 색상 변수 --- */
         :root {
             --main-brown: #6B4F3B;
-            --header-bg: #A38C7D;
             --card-green: #AEC69F;
             --card-yellow: #F8D58B;
             --card-blue: #A9C8E8;
-            --active-orange: #F9A825; /* bg-orange-400 (조금 더 선명하게) */
-            --hover-orange: #FBC02D;  /* bg-orange-300 (조금 더 선명하게) */
-
-            /* --- 요청하신 상단 바 CSS 변수 --- */
+            --active-orange: #F9A825;
+            --hover-orange: #FBC02D;
             --top-bar-bg: #F8C79D;
             --top-bar-text: #5A3E2B;
         }
@@ -50,19 +47,19 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
-            background-color: #F5F0E8; /* 메인 배경색 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            background-color: #F5F0E8;
         }
 
-        /* --- (추가) 요청하신 상단 바 스타일 --- */
+        /* --- 상단 바 --- */
         .top-bar {
             display: flex;
-            justify-content: space-between; /* 로고와 아이콘을 양 끝으로 정렬 */
+            justify-content: space-between;
             align-items: center;
             padding: 10px 15px;
-            background-color: var(--top-bar-bg); /* 이미지의 상단 바 색상 */
-            height: 60px; /* 높이 조정 */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            background-color: var(--top-bar-bg);
+            height: 60px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .top-bar .logo-section {
@@ -87,7 +84,7 @@
         .top-bar .logo-text {
             font-size: 22px;
             font-weight: bold;
-            color: var(--top-bar-text); /* 이미지의 텍스트 색상 */
+            color: var(--top-bar-text);
         }
 
         .top-bar .notification-icon {
@@ -101,80 +98,70 @@
             align-items: center;
             border: 1px solid rgba(255, 255, 255, 0.6);
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            position: relative; /* 팝업이 이 요소를 기준으로 위치하도록 설정 */
-            cursor: pointer;    /* 클릭할 수 있는 요소임을 표시 */
-            color: var(--top-bar-text); /* 아이콘 색상 */
+            position: relative;
+            cursor: pointer;
+            color: var(--top-bar-text);
         }
 
-        /* 알림 팝업창 기본 스타일 */
+        /* 알림 팝업 */
         .notification-popup {
-            display: none; /* (중요) 기본적으로 숨김 */
+            display: none;
             position: absolute;
-            top: calc(100% + 15px); /* 아이콘 래퍼 바로 아래 + 15px 여백 */
-            right: -10px;          /* 아이콘 기준으로 오른쪽 정렬 (살짝 우측으로) */
-
+            top: calc(100% + 15px);
+            right: -10px;
             width: 220px;
             padding: 1rem;
             background-color: #ffffff;
             border: 1px solid #e0e0e0;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            z-index: 100; /* 다른 요소들 위에 보이도록 설정 */
-
+            z-index: 100;
             color: #555;
             font-size: 0.9rem;
             text-align: center;
         }
 
-        /* 팝업창을 보여주는 'show' 클래스 */
         .notification-popup.show {
-            display: block; /* (중요) 이 클래스가 붙으면 보이게 함 */
+            display: block;
         }
 
-        /* 팝업창 위쪽의 작은 화살표 (꼬리) */
         .notification-popup .popup-arrow {
             position: absolute;
-            top: -10px; /* 팝업창 상단보다 10px 위에 위치 */
-            right: 18px; /* 팝업창 오른쪽 끝에서 18px 안쪽 */
-
+            top: -10px;
+            right: 18px;
             width: 0;
             height: 0;
-
-            /* 삼각형 만들기 */
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
-            border-bottom: 10px solid #ffffff; /* 팝업창 배경색과 동일 */
-
-            /* 테두리선과 겹치지 않게 그림자(테두리) 효과 추가 */
+            border-bottom: 10px solid #ffffff;
             filter: drop-shadow(0 -1px 0.5px #e0e0e0);
         }
 
-        /* --- (기존 스타일) 메인 컨텐츠 --- */
+        /* --- 메인 컨텐츠 --- */
         .main-content {
-            flex: 1; /* flex-1 */
-            padding: 2rem; /* p-8 */
+            flex: 1;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
         .main-title {
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: 700; /* font-bold */
+            font-size: 2.25rem;
+            font-weight: 700;
             color: var(--main-brown);
             text-align: center;
-            margin-bottom: 2rem; /* mb-8 */
+            margin-bottom: 2rem;
         }
 
         /* --- 주문 그리드 --- */
         .order-grid {
             display: grid;
-            grid-template-columns: 1fr; /* 모바일 기본 */
-            gap: 1.5rem; /* gap-6 */
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
             width: 100%;
         }
 
-        /* (추가) 주문이 없을 때 메시지 */
         .order-grid-empty {
             text-align: center;
             font-size: 1.25rem;
@@ -186,64 +173,60 @@
             border-radius: 1rem;
         }
 
-
-        /* 태블릿 (md) 분기점 (768px 이상) */
         @media (min-width: 768px) {
             .order-grid {
-                grid-template-columns: repeat(2, 1fr); /* md:grid-cols-2 */
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         /* --- 주문 카드 --- */
         .order-card {
-            padding: 1.5rem; /* p-6 */
-            border-radius: 1rem; /* rounded-2xl */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: relative;
         }
 
-        /* * (수정) 주문 유형별 배경색
-         * 요청사항: 매장(초록), 포장(초록), 배달(파랑)
-         * -> 포장을 노란색으로 수정 (기존 더미데이터 기준)
-        */
-        .order-card.type-store { background-color: var(--card-green); }   /* 매장 */
-        .order-card.type-takeout { background-color: var(--card-yellow); } /* 포장 */
-        .order-card.type-delivery { background-color: var(--card-blue); }  /* 배달 */
-        .order-card.type-default { background-color: #ddd; } /* 기타 */
-
+        .order-card.type-store { background-color: var(--card-green); }
+        .order-card.type-takeout { background-color: var(--card-yellow); }
+        .order-card.type-delivery { background-color: var(--card-blue); }
+        .order-card.type-default { background-color: #ddd; }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem; /* mb-3 */
+            margin-bottom: 0.75rem;
+            padding-right: 40px;
         }
 
         .order-id {
             background-color: white;
             color: var(--main-brown);
-            font-size: 1.125rem; /* text-lg */
-            font-weight: 700; /* font-bold */
-            padding: 0.25rem 0.75rem; /* px-3 py-1 */
-            border-radius: 9999px; /* rounded-full */
+            font-size: 1.125rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
             border: 1px solid #eee;
         }
 
         .order-time {
-            font-size: 1.125rem; /* text-lg */
-            font-weight: 600; /* font-semibold */
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-right: 10px;
         }
 
         .menu-list {
             list-style: none;
-            font-size: 1.125rem; /* text-lg */
-            margin-bottom: 1rem; /* mb-4 */
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
         }
 
         .menu-list li {
-            margin-bottom: 0.25rem; /* space-y-1 */
+            margin-bottom: 0.25rem;
         }
 
         .menu-list span {
@@ -253,16 +236,74 @@
         .card-footer-row {
             display: flex;
             justify-content: space-between;
-            font-size: 1.125rem; /* text-lg */
-            font-weight: 600; /* font-semibold */
-            margin-top: 0.5rem; /* mt-2 */
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
         }
 
         .card-footer-total {
             display: flex;
             justify-content: space-between;
-            font-size: 1.25rem; /* text-xl */
-            font-weight: 700; /* font-bold */
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* ... 버튼 */
+        .card-menu-button {
+            position: absolute;
+            top: 1.5rem;
+            right: 1rem;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 30px;
+            text-align: center;
+            color: inherit;
+            padding-bottom: 10px;
+        }
+        .card-menu-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 드롭다운 */
+        .card-menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 45px;
+            right: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            z-index: 10;
+            overflow: hidden;
+            width: 100px;
+        }
+        .card-menu-dropdown.show {
+            display: block;
+        }
+        .card-menu-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        .card-menu-dropdown button:hover {
+            background-color: #f4f4f4;
+        }
+        .card-menu-dropdown button.complete {
+            color: #27ae60;
+        }
+        .card-menu-dropdown button.cancel {
+            color: #e74c3c;
         }
 
         /* --- 하단 네비게이션 --- */
@@ -274,22 +315,22 @@
         }
 
         .footer-nav-item {
-            flex: 1; /* flex-1 */
-            padding: 2rem 0; /* py-8 (요청하신대로 매우 크게) */
-            text-align: center; /* text-center */
-            color: white; /* text-white */
-            font-size: 1.5rem; /* text-2xl (요청하신대로 매우 크게) */
-            font-weight: 600; /* font-semibold */
+            flex: 1;
+            padding: 2rem 0;
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
         }
 
         .footer-nav-item.active {
-            background-color: var(--active-orange); /* bg-orange-400 */
+            background-color: var(--active-orange);
         }
 
         .footer-nav-item:not(.active):hover {
-            background-color: var(--hover-orange); /* bg-orange-300 */
+            background-color: var(--hover-orange);
         }
 
     </style>
@@ -298,13 +339,11 @@
 
 <div class="wrapper">
 
-    <!-- (수정) 상단 헤더 -->
     <header class="top-bar">
         <div class="logo-section">
             <span class="logo-icon">☕</span>
             <span class="logo-text">JavaBean</span>
         </div>
-        <!-- (수정) 알림 아이콘 (기존 SVG 재사용 및 스타일 적용) -->
         <div class="notification-icon" id="notification-trigger">
             <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px;">
                 <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
@@ -315,21 +354,14 @@
         </div>
     </header>
 
-    <!-- 메인 컨텐츠 영역 (주문 목록) -->
     <main class="main-content">
         <h2 class="main-title">주문 목록</h2>
 
-        <!--
-          (수정) 주문 그리드
-          하드코딩된 6개의 카드를 모두 삭제했습니다.
-          아래의 <script>가 이 div를 동적으로 채웁니다.
-        -->
         <div class="order-grid" id="order-grid-container">
             <!-- 주문 카드가 여기에 동적으로 삽입됩니다. -->
         </div>
     </main>
 
-    <!-- 하단 네비게이션 바 -->
     <footer class="footer-nav">
         <a href="#" class="footer-nav-item">메뉴 관리</a>
         <a href="#" class="footer-nav-item active">주문 관리</a>
@@ -339,26 +371,18 @@
 
 </div>
 
-<!-- (수정) 기존 /js/main.js 링크 대신 스크립트 직접 삽입 -->
 <script>
-    // 1. DOM이 모두 로드된 후 스크립트 실행
     document.addEventListener('DOMContentLoaded', () => {
 
         // --- 상수 및 변수 정의 ---
 
-        // (중요) 실제 백엔드 API 엔드포인트로 수정해야 합니다.
-        // OrderVO 객체의 리스트(List<OrderVO>)를 반환해야 합니다.
-        // (수정) iFrame 환경에서 상대 경로가 작동하지 않는 오류를
-        //        해결하기 위해, 전체 URL을 사용합니다.
-        //        (서버가 http://localhost:8383 에서 실행 중이라고 가정)
-        const API_ENDPOINT = 'http://localhost:8383/api/orders/admin-list';
+        const API_BASE_URL = 'http://localhost:8383/api/orders';
+        const API_ENDPOINT_LIST = `${API_BASE_URL}/admin-list`;
+        const API_ENDPOINT_STATUS_UPDATE = `${API_BASE_URL}/status`;
 
-        // (수정) 주문 목록을 실시간으로 새로고침할 간격 (ms)
-        // 10000ms (10초) -> 3000ms (3초)로 변경
-        // 이 값을 줄이면 더 "즉시" 반응하는 것처럼 보입니다.
         const POLLING_INTERVAL = 3000;
+        let pollingTimer = null;
 
-        // DOM 요소 캐시
         const orderGrid = document.getElementById('order-grid-container');
         const notificationTrigger = document.getElementById('notification-trigger');
         const notificationPopup = document.getElementById('notification-popup');
@@ -371,78 +395,90 @@
          */
         async function fetchAndRenderOrders() {
             try {
-                // (수정) fetch가 항상 최신 데이터를 요청하도록 cache: 'no-store' 옵션 추가
-                const response = await fetch(API_ENDPOINT, { cache: 'no-store' });
+                const response = await fetch(API_ENDPOINT_LIST, { cache: 'no-store' });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`[1] HTTP error! status: ${response.status}`);
                 }
 
-                // API 응답이 OrderVO[] 형태라고 가정합니다.
                 const orders = await response.json();
-
-                // 렌더링 전 그리드 비우기
-                orderGrid.innerHTML = '';
-
-                if (!orders || orders.length === 0) {
-                    // 주문이 없는 경우
-                    orderGrid.innerHTML = '<div class="order-grid-empty">현재 접수된 주문이 없습니다.</div>';
-                } else {
-                    // 주문 목록 렌더링
-                    orders.forEach(order => {
-                        const cardHtml = createOrderCard(order);
-                        orderGrid.insertAdjacentHTML('beforeend', cardHtml);
-                    });
-                }
+                renderOrders(orders);
 
             } catch (error) {
                 console.error('주문 목록을 가져오는 데 실패했습니다:', error);
-                orderGrid.innerHTML = '<div class="order-grid-empty">주문 목록을 불러오는 중 오류가 발생했습니다. (서버 연결 확인)</div>';
+                orderGrid.innerHTML = `<div class="order-grid-empty">주문 목록 로딩 오류. (${error.message})</div>`;
+            }
+        }
+
+        /**
+         * 주문 배열을 받아 화면에 렌더링합니다.
+         */
+        function renderOrders(orders) {
+            orderGrid.innerHTML = '';
+
+            if (!orders || orders.length === 0) {
+                orderGrid.innerHTML = '<div class="order-grid-empty">현재 접수된 주문이 없습니다.</div>';
+            } else {
+                orders.forEach(order => {
+                    const cardHtml = createOrderCard(order);
+                    orderGrid.insertAdjacentHTML('beforeend', cardHtml);
+                });
             }
         }
 
         /**
          * 주문 객체(order)를 받아 HTML 카드 문자열을 생성합니다.
-         * (참고: OrderVO 구조는 더미데이터를 기반으로 가정했습니다.)
          */
         function createOrderCard(order) {
             // 1. 주문 유형(orderType)에 따른 CSS 클래스 결정
-            let cardTypeClass = 'type-default'; // 기본값
-            if (order.orderType === '매장') {
-                cardTypeClass = 'type-store'; // 초록색
-            } else if (order.orderType === '포장') {
-                cardTypeClass = 'type-takeout'; // 노란색
-            } else if (order.orderType === '배달') {
-                cardTypeClass = 'type-delivery'; // 파란색
-            }
+            let cardTypeClass = 'type-default';
+            if (order.orderType === '매장') cardTypeClass = 'type-store';
+            else if (order.orderType === '포장') cardTypeClass = 'type-takeout';
+            else if (order.orderType === '배달') cardTypeClass = 'type-delivery';
 
             // 2. 주문 아이템 목록(orderItemList)을 <li> 태그로 변환
-            // (참고: API가 'orderItemList' 배열을 반환한다고 가정)
-            // (수정) orderItemList가 null일 경우를 대비하여 기본값(빈 배열) 제공
-            const menuItemsHtml = (order.orderItemList || []).map(item => `
+            const menuItemsHtml = (order.orderItemList && Array.isArray(order.orderItemList))
+                ? order.orderItemList.map(item => `
                     <li>${item.menuItemName || '알 수 없는 메뉴'} <span>${item.quantity || 0}</span></li>
-                `).join('');
+                `).join('')
+                : '';
 
-            // (수정) menuItemsHtml이 비어있을 경우 (주문 아이템이 없는 경우)
-            const finalMenuItemsHtml = menuItemsHtml === '' ? '<li>주문 내역이 없습니다.</li>' : menuItemsHtml;
+            // 3. orderTime (DATETIME)을 "HH시 mm분"으로 포맷팅
+            let formattedTime = '00:00';
+            if (order.orderTime) {
+                try {
+                    const date = new Date(order.orderTime);
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    formattedTime = `${hours}시 ${minutes}분`;
+                } catch (e) {
+                    console.error("시간 포맷팅 오류", e);
+                    formattedTime = "시간오류";
+                }
+            }
 
-            // 3. 최종 HTML 카드 반환
+            // 4. [수정] 포맷팅 대상을 order.orderId -> order.dailyOrderNum으로 변경
+            //    (dailyOrderNum은 OrderVO에 새로 추가된 Long 필드입니다)
+            const formattedDailyId = `#${String(order.dailyOrderNum || 0).padStart(4, '0')}`;
+
+            // 5. 카드 템플릿
+            //    [중요] .order-id에는 포맷팅된 '일일 번호' (formattedDailyId)를 표시
+            //    [중요] 버튼의 data-order-id에는 DB의 '실제 ID' (order.orderId)를 저장
             return `
-                <div class="order-card ${cardTypeClass}">
+                <div class="order-card ${cardTypeClass}" id="order-card-${order.orderId}">
                     <div>
                         <div class="card-header">
-                            <span class="order-id">${order.orderId || '#000'}</span>
-                            <!-- (수정) orderTime이 null일 경우를 대비 -->
-                            <span class="order-time">${order.orderTime || '00:00'}</span>
+                            <!-- [수정] 표시되는 ID를 일일 번호로 변경 -->
+                            <span class="order-id">${formattedDailyId}</span>
+                            <span class="order-time">${formattedTime}</span>
                         </div>
                         <ul class="menu-list">
-                            ${finalMenuItemsHtml}
+                            ${menuItemsHtml}
                         </ul>
                     </div>
                     <div>
                         <div class="card-footer-row">
                             <span>총 수량</span>
-                            <!-- (수정) totalQuantity가 null일 경우를 대비 -->
                             <span>${order.totalQuantity || 0}</span>
                         </div>
                         <div class="card-footer-total">
@@ -450,16 +486,57 @@
                             <span>${(order.totalPrice || 0).toLocaleString('ko-KR')}원</span>
                         </div>
                     </div>
+
+                    <!--
+                      [중요]
+                      버튼의 data-order-id는 "완료/취소" API가 호출할
+                      DB의 실제 PK (예: 501)를 저장해야 합니다.
+                    -->
+                    <button class="card-menu-button" data-order-id="${order.orderId}">⋮</button>
+                    <div class="card-menu-dropdown" id="menu-dropdown-${order.orderId}">
+                        <button class="complete" data-status="주문완료">✔ 완료</button>
+                        <button class="cancel" data-status="주문취소">✖ 취소</button>
+                    </div>
                 </div>
             `;
+        }
+
+        /**
+         * 주문 상태 업데이트 (완료/취소)
+         */
+        async function handleUpdateStatus(orderId, status) {
+
+            clearInterval(pollingTimer); // 레이스 컨디션 방지
+
+            try {
+                const response = await fetch(`${API_ENDPOINT_STATUS_UPDATE}/${orderId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: status })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`[3] 서버 응답 오류: ${response.status}`);
+                }
+
+                // DB에서 확인된 최신 목록으로 새로고침
+                await fetchAndRenderOrders();
+
+            } catch (error) {
+                console.error('상태 변경 실패:', error);
+                alert(`[4] 상태 변경에 실패했습니다. (${error.message})\n목록을 새로고침합니다.`);
+                await fetchAndRenderOrders();
+            } finally {
+                startPolling(); // 타이머 재시작
+            }
         }
 
 
         // --- 이벤트 리스너 및 초기화 ---
 
-        // 1. 알림 팝업 토글 이벤트
+        // 1. 알림 팝업 토글
         notificationTrigger.addEventListener('click', (event) => {
-            event.stopPropagation(); // 이벤트 버블링 방지
+            event.stopPropagation();
             notificationPopup.classList.toggle('show');
         });
 
@@ -468,16 +545,58 @@
             if (notificationPopup.classList.contains('show') && !notificationTrigger.contains(event.target)) {
                 notificationPopup.classList.remove('show');
             }
+
+            document.querySelectorAll('.card-menu-dropdown.show').forEach(dropdown => {
+                if (!dropdown.previousElementSibling.contains(event.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
         });
 
-        // 3. 페이지 로드 시 즉시 주문 목록 가져오기
+        // 3. 주문 그리드 이벤트 위임
+        orderGrid.addEventListener('click', (event) => {
+            const target = event.target;
+
+            // (A) ... 메뉴 버튼 클릭 시
+            if (target.classList.contains('card-menu-button')) {
+                event.stopPropagation();
+                // [중요] data-order-id는 DB의 실제 ID (Long)
+                const orderId = target.dataset.orderId;
+                const dropdown = document.getElementById(`menu-dropdown-${orderId}`);
+
+                document.querySelectorAll('.card-menu-dropdown.show').forEach(d => {
+                    if (d !== dropdown) d.classList.remove('show');
+                });
+                dropdown.classList.toggle('show');
+            }
+
+            // (B) 드롭다운 메뉴 (완료/취소) 클릭 시
+            if (target.matches('.card-menu-dropdown button')) {
+                event.stopPropagation();
+                const dropdown = target.closest('.card-menu-dropdown');
+                // [중요] data-order-id는 DB의 실제 ID (Long)
+                const orderId = dropdown.previousElementSibling.dataset.orderId;
+                const status = target.dataset.status;
+
+                dropdown.classList.remove('show');
+
+                handleUpdateStatus(orderId, status);
+            }
+        });
+
+        // 타이머 시작/정지 함수화
+        function startPolling() {
+            clearInterval(pollingTimer);
+            pollingTimer = setInterval(fetchAndRenderOrders, POLLING_INTERVAL);
+        }
+
+        // 4. 페이지 로드 시 즉시 주문 목록 가져오기
         fetchAndRenderOrders();
 
-        // 4. (실시간 업데이트) 설정된 간격(POLLING_INTERVAL)마다 주문 목록 새로고침
-        setInterval(fetchAndRenderOrders, POLLING_INTERVAL);
+        // 5. (실시간 업데이트) 타이머 시작
+        startPolling();
 
         console.log(`Admin Order Page script loaded. Polling every ${POLLING_INTERVAL / 1000} seconds.`);
-
     });
 </script>
 

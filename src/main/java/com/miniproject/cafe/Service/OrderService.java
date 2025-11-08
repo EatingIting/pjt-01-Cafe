@@ -7,6 +7,6 @@ import java.util.List;
 public interface OrderService {
 
     List<OrderVO> getAdminOrderList(); //관리자 페이지에 표시될 주문 목록
-    OrderVO getOrderDetail(String orderId); //주문의 상세 정보
     OrderVO createOrder(OrderVO order); //주문 넣기
+    void updateOrderStatus(String status, Long orderId);//주문 상태 업데이트
 }

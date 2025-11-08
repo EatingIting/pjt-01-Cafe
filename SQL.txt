@@ -1,19 +1,3 @@
-CREATE DATABASE IF NOT EXISTS mini_pjt_1
-    DEFAULT CHARACTER SET utf8mb4
-    DEFAULT COLLATE utf8mb4_unicode_ci;
-
-CREATE USER IF NOT EXISTS 'pjt1'@'%'
-    IDENTIFIED WITH mysql_native_password BY 'pjt1';
-
-GRANT ALL PRIVILEGES ON mini_pjt_1.* TO 'pjt1'@'%';
-
-FLUSH PRIVILEGES;
-
-USE mini_pjt_1;
-SHOW GRANTS FOR 'pjt1'@'%';
-
-
-
 CREATE TABLE MENU (
     menu_id VARCHAR(50) NOT NULL,
     menu_name VARCHAR(100) NOT NULL,
@@ -28,10 +12,10 @@ CREATE TABLE MEMBER (
     email VARCHAR(100) NOT NULL,
     menu_id VARCHAR(50) NULL,
     order_num INT NULL,
-    
+
     -- PK (기본 키) 제약조건
     CONSTRAINT PK_MEMBER PRIMARY KEY (u_id),
-    
+
     -- FK (외래 키) 제약조건 (영문 이름으로 변경)
     CONSTRAINT FK_MENU_TO_MEMBER FOREIGN KEY (menu_id)
     REFERENCES MENU (menu_id) -- '메뉴' 대신 'MENU' 테이블 참조
@@ -40,22 +24,22 @@ CREATE TABLE MEMBER (
 CREATE TABLE CART (
     -- '장바구니ID' (PK, NUMBER -> INT)
     cart_id INT NOT NULL,
-    
+
     -- '회원아이디' (FK, VARCHAR)
     u_id VARCHAR(100) NULL,
-    
+
     -- '총가격' (NUMBER -> INT)
     total_price INT NULL,
-    
+
     -- '옵션선택' (Type -> VARCHAR)
     options VARCHAR(255) NULL,
-    
+
     -- '요청사항' (VARCHAR2 -> VARCHAR)
     special_requests VARCHAR(500) NULL,
-    
+
     -- Define Primary Key
     CONSTRAINT PK_CART PRIMARY KEY (cart_id),
-    
+
     -- Define Foreign Key (Assuming MEMBER(member_id) table)
     CONSTRAINT FK_MEMBER_TO_CART FOREIGN KEY (u_id)
         REFERENCES MEMBER(u_id)
@@ -70,10 +54,10 @@ CREATE TABLE ORDERS(
     pickup_method VARCHAR(50) NULL,
     store_location VARCHAR(100) NULL,
     CONSTRAINT PK_ORDERS PRIMARY KEY (order_id),
-    
+
     CONSTRAINT FK_MEMBER_TO_ORDERS FOREIGN KEY (u_id)
         REFERENCES MEMBER(u_id),
-        
+
     CONSTRAINT FK_CART_TO_ORDERS FOREIGN KEY (cart_id)
         REFERENCES CART(cart_id)
 );
@@ -86,23 +70,38 @@ ADD COLUMN TOTAL_QUANTITY INT NULL;
 
 ALTER TABLE orders MODIFY COLUMN order_time DATETIME;
 
+ALTER TABLE MENU
+ADD COLUMN CATEGORY VARCHAR(100),
+ADD COLUMN SALES_STATUS VARCHAR(100),
+ADD COLUMN MENU_IMG BLOB;
+
+ALTER TABLE MENU
+ADD COLUMN DESCRIPTION VARCHAR(1000);
+
+select * from menu;
+
 select * from orders;
 
 delete from orders where order_id like 'TEST%';
 
 show variables like 'event_scheduler';
 
-DELIMITER $$
-
-CREATE EVENT delete_all_orders_at_midnight
-ON SCHEDULE
-    EVERY 1 DAY
-    STARTS (CURRENT_DATE + INTERVAL 1 DAY)
-DO
-    BEGIN
-        DELETE FROM ORDERS;
-    END$$
-    
-DELIMITER ;
+drop event if exists delete_all_orders_at_midnight;
 
 show events;
+
+select * from orders;
+
+SET FOREIGN_KEY_CHECKS = 1;
+TRUNCATE TABLE orders;
+
+ALTER TABLE orders DROP PRIMARY KEY;
+
+ALTER TABLE orders
+MODIFY COLUMN ORDER_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY;
+
+ALTER TABLE orders AUTO_INCREMENT = 1;
+
+desc orders;
+
+DELETE FROM orders WHERE order_id IN (6,7,8);

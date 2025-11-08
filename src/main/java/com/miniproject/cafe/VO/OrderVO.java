@@ -14,14 +14,16 @@ import java.util.List;
 @Builder
 public class OrderVO {
 
-    private String orderId;       // 주문 번호 (예: "#103")
-    private Date orderTime;     // 주문 시간 (날짜 포함)
-    private int totalQuantity;    // 총 수량 (예: 3)
-    private int totalPrice;       // 총 금액 (예: 9000)
-    private String orderType;
+    private Long orderId;      // 주문 번호 (#0001)
+    private Date orderTime;     // 주문 시간
+    private int totalQuantity;    // 총 수량
+    private int totalPrice;       // 총 금액
+    private String orderType; // 주문 유형 (매장, 포장, 배달)
 
     private String uId;
-    private String orderStatus;// 주문 유형 (예: "매장", "포장", "배달")
+    private String orderStatus;
 
     private List<OrderItemVO> orderItemList;
+
+    private Long dailyOrderNum;
 }
