@@ -1,14 +1,9 @@
 const LIKE_KEY = "likedMenus";
 
-// 메뉴 데이터 예시
-const MENU_DATA = {
-    "아메리카노": { price: 3000, image: "img/아아.png" },
-    "바닐라라떼": { price: 3000, image: "img/아바라.png" },
-    "밤라떼": { price: 3500, image: "img/밤라떼.jpg" },
-    "군고구마라떼": { price: 3500, image: "img/군고구마라떼.png" }
-};
+// ⚠️ MENU_DATA 객체를 제거합니다. ⚠️
 
 document.addEventListener("DOMContentLoaded", () => {
+    // likedMenus는 이제 메뉴 상세 정보 객체의 배열입니다.
     const likedMenus = JSON.parse(localStorage.getItem(LIKE_KEY)) || [];
     const listContainer = document.getElementById("myPickList");
 
@@ -20,24 +15,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    likedMenus.forEach(menuName => {
-        const menu = MENU_DATA[menuName];
-        if (!menu) return;
-
+    // likedMenus 배열의 각 객체(menu)를 사용합니다.
+    likedMenus.forEach(menu => {
         const item = document.createElement("div");
         item.classList.add("menu-item");
 
         item.innerHTML = `
-          <img src="${menu.image}" alt="${menuName}" class="menu-image">
+          <img src="${menu.image}" alt="${menu.name}" class="menu-image">
           <div class="menu-details">
-              <div class="menu-name">${menuName}</div>
+              <div class="menu-name">${menu.name}</div>
               <div>
                 <span class="menu-temp">ICE</span>
                 <span class="menu-temp hot">HOT</span>
               </div>
-              <div class="menu-price">${menu.price}원~</div>
+              <div class="menu-price">${menu.price}원~</div> 
           </div>
-          <span class="like-button" onclick="removeLike('${menuName}', this)">❤</span>
+          <span class="like-button" onclick="removeLike('${menu.name}', this)">❤</span>
         `;
 
         listContainer.appendChild(item);
@@ -46,7 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function removeLike(menuName, element) {
     let likedMenus = JSON.parse(localStorage.getItem(LIKE_KEY)) || [];
-    likedMenus = likedMenus.filter(name => name !== menuName);
+    // 메뉴 객체 배열에서 이름이 일치하는 항목을 제거
+    likedMenus = likedMenus.filter(item => item.name !== menuName);
     localStorage.setItem(LIKE_KEY, JSON.stringify(likedMenus));
     element.closest(".menu-item").remove();
 }

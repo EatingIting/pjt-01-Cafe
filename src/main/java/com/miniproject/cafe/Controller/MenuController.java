@@ -33,4 +33,9 @@ public class MenuController {
         return "menu/newMenu";
     }
 
+    @GetMapping("/mypick")
+    public String mypick() {
+        return "redirect:/home/mypick";
+    }
+
 }
