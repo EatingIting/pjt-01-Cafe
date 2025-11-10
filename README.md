@@ -9,7 +9,7 @@
 모든 메인 페이지(로그인,회원가입,관리자페이지 제외)는 반드시 `th:replace` 구문을 사용하여 `userBaseLayout.html`의 `setContent` Fragment를 호출해주세요!!
 
 ```html
-<html lang="ko" xmlns:th="[http://www.thymeleaf.org](http://www.thymeleaf.org)">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{./include/userBaseLayout :: setContent( ~{:: .wrap} ) }">
     <div class="wrap">
         ...이곳에 메인content 작성
