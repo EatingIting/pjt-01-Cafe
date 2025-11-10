@@ -18,9 +18,9 @@ public class HomeController {
         return "order_history";
     }
 
-    @GetMapping("/food")
+    @GetMapping("coffee")
     public String food() {
-        return "food";
+        return "menu/coffee";
     }
 
 }

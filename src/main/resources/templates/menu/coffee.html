@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<title>JavaBean - 메뉴 커피 창</title>
+    <link rel="stylesheet" href="/css/menu.css">
+<th:block th:replace="~{./include/userBaseLayout :: setContent( ~{:: .wrap} ) }">
+
+    <div class="wrap">
+
+        <nav class="category-tab-bar">
+            <a href="newMenu">신메뉴</a>
+            <a href="coffee" class="active-category">커피</a>
+            <a href="beverage">음료</a>
+            <a href="tea">티/에이드</a>
+            <a href="food">푸드</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="menu-list-container">
+
+                <div class="menu-item" onclick="selectMenu('아메리카노')">
+                    <img src="../../static/img/아아.png" alt="아메리카노" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">아메리카노</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3000원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('헤이즐넛 아메리카노')">
+                    <img src="img/아아.png" alt="헤이즐넛 아메리카노" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">헤이즐넛 아메리카노</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3000원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('카페라떼')">
+                    <img src="../../static/img/카페라떼.png" alt="카페라떼" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">카페라떼</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3000원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('바닐라라떼')">
+                    <img src="../../static/img/아바라.png" alt="바닐라라떼" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">바닐라라떼</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3000원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('카라멜 마끼아또')">
+                    <img src="../../static/img/카라멜%20마끼아또.png" alt="카라멜 마끼아또" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">카라멜 마끼아또</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3500원~</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+                <div class="menu-item" onclick="selectMenu('카푸치노')">
+                    <img src="../../static/img/카푸치노.png" alt="카푸치노" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">카푸치노</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3500원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+                <div class="menu-item" onclick="selectMenu('돌체 라떼')">
+                    <img src="../../static/img/돌체라떼.png" alt="돌체 라떼" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">돌체 라떼</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">4000원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+                <div class="menu-item" onclick="selectMenu('카페모카')">
+                    <img src="../../static/img/카페모카.png" alt="카페 모카" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">카페 모카</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">4500원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</th:block>
+<script src="/js/menu.js"></script>
+</html>

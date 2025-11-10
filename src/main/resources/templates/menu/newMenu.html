@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head><title>JavaBean - 메뉴 신메뉴 창</title>
+    <link rel="stylesheet" href="/css/menu.css">
+</head>
+<th:block th:replace="~{./include/userBaseLayout :: setContent( ~{:: .wrap} ) }">
+    <div class="wrap">
+
+        <nav class="category-tab-bar">
+            <a href="newMenu" class="active-category">신메뉴</a>
+            <a href="coffee" >커피</a>
+            <a href="beverage">음료</a>
+            <a href="tea">티/에이드</a>
+            <a href="food">푸드</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="menu-list-container">
+
+                <div class="menu-item" onclick="selectMenu('밤라떼')">
+                    <img src="../../static/img/밤라떼.jpg" alt="밤라떼" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">밤라떼</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3500원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('밤생초콜릿라떼')">
+                    <img src="../../static/img/밤생초콜릿라떼.jpg" alt="밤생초콜릿라떼" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">밤생초콜릿라떼</div>
+                        <div>
+                            <span class="menu-temp">ONLY ICE</span>
+                        </div>
+                        <div class="menu-price">3800원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('군고구마라떼')">
+                    <img src="../../static/img/군고구마라떼.png" alt="군고구마라떼" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">군고구마라떼</div>
+                        <div>
+                            <span class="menu-temp">ICE</span>
+                            <span class="menu-temp hot">HOT</span>
+                        </div>
+                        <div class="menu-price">3500원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</th:block>
+<script src="/js/menu.js"></script>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head><title>JavaBean - 메뉴 푸드 창</title>
+    <link rel="stylesheet" href="/css/menu.css">
+</head>
+<th:block th:replace="~{./include/userBaseLayout :: setContent( ~{:: .wrap} ) }">
+
+    <div class="wrap">
+
+        <nav class="category-tab-bar">
+            <a href="newMenu">신메뉴</a>
+            <a href="coffee" >커피</a>
+            <a href="beverage">음료</a>
+            <a href="tea">티/에이드</a>
+            <a href="food" class="active-category">푸드</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="menu-list-container">
+
+                <div th:each="item : ${menuItems}">
+                    <img th:src="@{'/img/' + ${item.image}}" th:alt="${item.name}">
+                    <span th:text="${item.name}"></span>
+                    <span th:text="${item.price} + '원'"></span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('크루아상')">
+                    <img src="/images/img/크루아상.jpg" alt="크루아상" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">크루아상</div>
+                        <div class="menu-price">2800원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('치즈케이크')">
+                    <img src="/images/img/치즈케이크.jpg" alt="치즈케이크" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">치즈케이크</div>
+                        <div class="menu-price">4000원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+                <div class="menu-item" onclick="selectMenu('햄치즈잉글리시머핀')">
+                    <img src="/images/img/햄치즈잉글리시머핀.png" alt="햄치즈잉글리시머핀" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">햄치즈잉글리시머핀</div>
+                        <div class="menu-price">3800원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+                <div class="menu-item" onclick="selectMenu('플레인베이글')">
+                    <img src="img/플레인베이글.jpg" alt="플레인베이글" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">플레인베이글</div>
+                        <div class="menu-price">2500원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+                <div class="menu-item" onclick="selectMenu('크로플')">
+                    <img src="img/크로플.jpg" alt="크로플" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">크로플</div>
+                        <div class="menu-price">4000원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+                <div class="menu-item" onclick="selectMenu('허니브레드')">
+                    <img src="img/허니브레드.jpg" alt="허니브레드" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">허니브레드</div>
+                        <div class="menu-price">4500원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+                <div class="menu-item" onclick="selectMenu('쿠키')">
+                    <img src="img/쿠키.jpeg" alt="쿠키" class="menu-image">
+                    <div class="menu-details">
+                        <div class="menu-name">쿠키</div>
+                        <div class="menu-price">2500원</div>
+                    </div>
+                    <span class="like-button" onclick="toggleLike(this, event)">♡</span>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</th:block>
+<script src="/js/menu.js"></script>
+</html>
