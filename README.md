@@ -12,7 +12,8 @@
 <html lang="ko" xmlns:th="[http://www.thymeleaf.org](http://www.thymeleaf.org)">
 <th:block th:replace="~{./include/userBaseLayout :: setContent( ~{:: .wrap} ) }">
     <div class="wrap">
-        </div>
+        ...이곳에 메인content 작성
+    </div>
 </th:block>
 </html>
 ```
