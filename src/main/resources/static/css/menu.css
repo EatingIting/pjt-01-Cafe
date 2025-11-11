@@ -153,13 +153,6 @@
     2. 메인 콘텐츠 및 메뉴 관련 CSS
     ======================================
     */
-    .main-content {
-        flex-grow: 1;
-        overflow-y: auto; /* 메뉴 목록 세로 스크롤 */
-        background-image: url(../static/img/자바빈로고\ 2\ 투명도.png);
-        background-repeat: no-repeat;
-        background-position: center center;
-    }
     /* 카테고리 탭 바 (가로 슬라이드) */
 /* 카테고리 탭 바 */
     .category-tab-bar {

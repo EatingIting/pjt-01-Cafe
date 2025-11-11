@@ -18,4 +18,29 @@ public class MenuServiceImpl implements MenuService {
     public List<MenuVO> getAllMenu() {
         return menuMapper.getAllMenu();
     }
+
+    @Override
+    public MenuVO getMenuById(String menuId) {
+        return menuMapper.getMenuById(menuId);
+    }
+
+    @Override
+    public List<MenuVO> getMenuByCategory(String category) {
+        return menuMapper.getMenuByCategory(category);
+    }
+
+    @Override
+    public int insertMenu(MenuVO menu) {
+        return menuMapper.insertMenu(menu);
+    }
+
+    @Override
+    public int updateMenu(MenuVO menu) {
+        return menuMapper.updateMenu(menu);
+    }
+
+    @Override
+    public int deleteMenu(String menuId) {
+        return menuMapper.deleteMenu(menuId);
+    }
 }

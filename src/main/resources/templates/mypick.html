@@ -5,18 +5,17 @@
 </head>
 <th:block th:replace="~{./include/userBaseLayout :: setContent( ~{:: .wrap} ) }">
 
-<div class="wrap">
-    <main class="main-content">
-      <div style="padding: 20px;">
-        <h2 style="font-size: 22px; font-weight: bold; color: #333; margin-bottom: 15px;">나만의 원픽</h2>
-      </div>
+    <div class="wrap">
+        <main class="main-content">
+          <div style="padding: 20px;" class="title">
+            <h2 style="font-weight: bold; color: #333; margin-bottom: 10px;" class="title-content">나만의 원픽</h2>
+          </div>
 
-      <div class="menu-list-container" id="myPickList">
-        <!-- 자바스크립트로 메뉴가 채워짐 -->
-      </div>
-    </main>
-
-  </div>
+          <div class="menu-list-container" id="myPickList">
+            <!-- 자바스크립트로 메뉴가 채워짐 -->
+          </div>
+        </main>
+    </div>
 </th:block>
 <script src="/js/mypick.js"></script>
 </html>

@@ -31,10 +31,9 @@ public class HomeController {
     public String food() {
         return "redirect:/menu/coffee";
     }
+
     @GetMapping("/mypick")
-    public String myPickPage(Model model) {
-        List<MenuVO> menu = menuService.getAllMenu();
-        model.addAttribute("menu", menu);
+    public String myPickPage() {
         return "mypick";
     }
 

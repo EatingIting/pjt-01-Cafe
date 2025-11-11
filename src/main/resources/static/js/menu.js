@@ -1,58 +1,63 @@
 const LIKE_KEY = "likedMenus";
 
 document.addEventListener("DOMContentLoaded", () => {
-    // ... (생략: 좋아요 상태 불러오는 기존 로직 유지)
     const likedMenus = JSON.parse(localStorage.getItem(LIKE_KEY)) || [];
     const likeButtons = document.querySelectorAll(".menu-item .like-button");
 
+    // 기존 좋아요 상태 표시
     likeButtons.forEach((btn) => {
         const menuItem = btn.closest(".menu-item");
         const menuName = menuItem.querySelector(".menu-name").textContent.trim();
-        const isLiked = likedMenus.some(item => item.name === menuName); // 이름으로 체크
+        const isLiked = likedMenus.some(item => item.name === menuName);
 
-        if (isLiked) {
-            btn.textContent = "❤";
-        }
+        btn.textContent = isLiked ? "❤" : "♡";
     });
 });
 
-// HTML 요소에서 메뉴 상세 정보를 추출합니다.
+// 메뉴 상세 정보를 추출
 function getMenuDetails(element) {
     const menuItem = element.closest(".menu-item");
     const name = menuItem.querySelector(".menu-name").textContent.trim();
 
-    // th:data-price 속성에서 가격을 가져옵니다. (HTML을 수정했을 경우)
     const priceText = menuItem.querySelector(".menu-price").dataset.price ||
         menuItem.querySelector(".menu-price").textContent.replace('원', '').trim();
     const price = parseInt(priceText, 10);
 
-    // 이미지 경로를 가져옵니다.
     const image = menuItem.querySelector(".menu-image").getAttribute('src');
+    const menuId = menuItem.dataset.menuId;
 
-    return { name, price, image, temp: 'ICE/HOT' }; // mypick에서 사용할 수 있도록 필수 정보 반환
+    return { menuId, name, price, image, temp: 'ICE/HOT' };
 }
 
-
+// 하트 토글
 function toggleLike(element, event) {
     event.stopPropagation();
+
+    const menuItem = element.closest(".menu-item");
+    if (!menuItem) return;
+
     const menuDetails = getMenuDetails(element);
     let likedMenus = JSON.parse(localStorage.getItem(LIKE_KEY)) || [];
 
-    const isLiked = likedMenus.some(item => item.name === menuDetails.name);
+    const isLiked = likedMenus.some(item => item.menuId === menuDetails.menuId);
 
+    // UI 즉시 변경
+    element.textContent = isLiked ? "♡" : "❤";
+
+    // localStorage 갱신
     if (isLiked) {
-        likedMenus = likedMenus.filter((item) => item.name !== menuDetails.name);
-        element.textContent = "♡";
+        likedMenus = likedMenus.filter(item => item.menuId !== menuDetails.menuId);
         console.log(menuDetails.name + " 좋아요 해제");
     } else {
         likedMenus.push(menuDetails);
-        element.textContent = "❤";
         console.log(menuDetails.name + " 좋아요 설정");
     }
 
     localStorage.setItem(LIKE_KEY, JSON.stringify(likedMenus));
 }
 
-function selectMenu(menuName) {
+// 메뉴 클릭 이벤트
+function selectMenu(menuItemElement) {
+    const menuName = menuItemElement.querySelector(".menu-name").textContent.trim();
     console.log(menuName + ' 선택됨');
 }

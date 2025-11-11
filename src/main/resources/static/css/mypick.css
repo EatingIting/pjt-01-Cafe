@@ -22,15 +22,31 @@ body {
     padding: 8px 15px;
 }
 
-.main-content {
-    flex: 1;
-    padding: 15px;
+.title {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #fff;
+    color: #333;
+    padding: 15px 20px;
+    margin: 0; /* ✅ 바깥 여백 제거 */
+    width: 100%; /* ✅ 가로 폭 전체 채우기 */
+    box-sizing: border-box; /* ✅ 패딩 포함해서 100% 유지 */
 }
 
-.title {
-    font-size: 20px;
-    margin-bottom: 15px;
-    font-weight: bold;
+.title-content {
+    background-color: #fff;
+    margin: 0; /* ✅ 여백 제거 */
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.main-content {
+    margin: 0;
+    padding: 0;
 }
 
 .menu-item {
