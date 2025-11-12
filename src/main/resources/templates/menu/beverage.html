@@ -17,18 +17,18 @@
         <main class="main-content">
             <div class="menu-list-container">
 
-                <!-- ✅ 메뉴 반복 출력 -->
+                <!-- 메뉴  -->
                 <div class="menu-item"
                      th:each="item : ${menuItems}"
                      th:attr="data-menu-id=${item.menuId}"
                      onclick="selectMenu(this)">
 
-                    <!-- ✅ 이미지 경로 -->
+                    <!-- 이미지 경로 -->
                     <img th:src="@{'/images/img/' + ${item.menuImg}}"
                          th:alt="${item.menuName}"
                          class="menu-image">
 
-                    <!-- ✅ 메뉴 상세 정보 -->
+                    <!-- 메뉴 상세 정보 -->
                     <div class="menu-details">
                         <div class="menu-name" th:text="${item.menuName}">메뉴 이름</div>
                             <span class="menu-temp">ICE</span>

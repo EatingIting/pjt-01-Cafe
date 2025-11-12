@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     likeButtons.forEach((btn) => {
         const menuItem = btn.closest(".menu-item");
         const menuName = menuItem.querySelector(".menu-name").textContent.trim();
-        const isLiked = likedMenus.some(item => item.name === menuName);
+        const isLiked = likedMenus.some(item => item.name === menuName); // ✅ 이름 기준으로 비교
 
         btn.textContent = isLiked ? "❤" : "♡";
     });
@@ -24,7 +24,7 @@ function getMenuDetails(element) {
     const price = parseInt(priceText, 10);
 
     const image = menuItem.querySelector(".menu-image").getAttribute('src');
-    const menuId = menuItem.dataset.menuId;
+    const menuId = menuItem.dataset.menuId; // 있어도 무관함
 
     return { menuId, name, price, image, temp: 'ICE/HOT' };
 }
@@ -33,20 +33,18 @@ function getMenuDetails(element) {
 function toggleLike(element, event) {
     event.stopPropagation();
 
-    const menuItem = element.closest(".menu-item");
-    if (!menuItem) return;
-
     const menuDetails = getMenuDetails(element);
     let likedMenus = JSON.parse(localStorage.getItem(LIKE_KEY)) || [];
 
-    const isLiked = likedMenus.some(item => item.menuId === menuDetails.menuId);
+    // ✅ 이름 기준으로 비교
+    const isLiked = likedMenus.some(item => item.name === menuDetails.name);
 
     // UI 즉시 변경
     element.textContent = isLiked ? "♡" : "❤";
 
     // localStorage 갱신
     if (isLiked) {
-        likedMenus = likedMenus.filter(item => item.menuId !== menuDetails.menuId);
+        likedMenus = likedMenus.filter(item => item.name !== menuDetails.name);
         console.log(menuDetails.name + " 좋아요 해제");
     } else {
         likedMenus.push(menuDetails);
