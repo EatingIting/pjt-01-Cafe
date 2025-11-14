@@ -23,8 +23,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public MenuVO findById(String id) {
-        return orderDetailMapper.findById(id);
+        return orderDetailMapper.findById(id)
     }
+
+
+//    @Override
+//    public List<MenuVO> getAllMenu() {
+//        return List.of();
+//    }
 
     @Override
     public int orderDetail(OrderDetailVO orderDetailVO) {
