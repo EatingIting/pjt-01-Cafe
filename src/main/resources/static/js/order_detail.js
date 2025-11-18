@@ -233,7 +233,79 @@ function initActionButtons() {
     // [주문하기] 버튼
     const orderBtn = document.querySelector('.order');
     if (orderBtn) {
-        orderBtn.addEventListener('click', placeOrder);
+        orderBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            // 1. HTML에서 필수 정보 추출 (Hidden Input)
+            const storeName = document.getElementById('detailStoreName')?.value || "";
+            const uId = document.getElementById('detailMemberId')?.value || "guest";
+            const menuId = document.getElementById('menuId')?.value; // Hidden input menuId 필요
+
+            // 2. UI에서 값 추출 (수량, 가격, 온도, 옵션)
+            // ⚠️ [주의] qty, appliedOptionCounts는 해당 페이지의 다른 JS 코드에서 계산되어 있어야 합니다.
+            const currentQty = parseInt(document.getElementById('qty').textContent || 1);
+            const total = parseInt(priceEl?.textContent.replace(/[^0-9]/g, '') || 0);
+            const tempValue = document.querySelector('.segmented-btn.active')?.dataset.value || 'ICE';
+
+            // 3. 필수 유효성 검사
+            if (!storeName) {
+                alert("매장 정보가 없습니다. 메인으로 돌아가 다시 선택해주세요.");
+                window.location.href = "/home/";
+                return;
+            }
+            if (!menuId) {
+                alert("메뉴 정보를 찾을 수 없습니다.");
+                return;
+            }
+
+            // 4. 옵션 데이터 매핑 (OrderItemVO 필드와 일치!)
+            // appliedOptionCounts는 샷, 시럽 등의 개수를 담은 객체라고 가정합니다.
+            const itemData = {
+                menuId: menuId,
+                menuItemName: document.getElementById('menuName')?.value || "Unknown", // Hidden input menuName 필요
+                quantity: currentQty,
+
+                // ⭐ OrderItemVO 옵션 필드 매핑
+                temp: tempValue,
+                tumbler: document.getElementById('tumblerCheck')?.checked ? 1 : 0, // 텀블러 체크박스 ID 가정
+                shot: appliedOptionCounts?.['샷 추가'] || 0, // appliedOptionCounts 객체 사용
+                vanillaSyrup: appliedOptionCounts?.['바닐라 시럽 추가'] || 0,
+                whippedCream: appliedOptionCounts?.['휘핑 크림 추가'] || 0
+            };
+
+            // 5. 최종 페이로드 구성 (OrderVO 구조)
+            const orderPayload = {
+                totalQuantity: currentQty,
+                totalPrice: total,
+                orderType: "매장", // 주문 유형 선택 로직에 따라 변경 필요
+                orderStatus: "주문접수",
+                uId: uId,
+                storeName: storeName,
+                orderItemList: [itemData] // 단일 주문이므로 배열에 하나만 담음
+            };
+
+            console.log("🚀 [ORDER SENDING] Payload:", orderPayload);
+
+            // 6. API 전송
+            try {
+                const response = await fetch("/api/orders/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orderPayload)
+                });
+
+                if (response.ok) {
+                    alert("주문이 성공적으로 접수되었습니다!");
+                    window.location.href = "/home/";
+                } else {
+                    const errorText = await response.text();
+                    throw new Error("서버 처리 실패: " + errorText);
+                }
+            } catch (e) {
+                console.error("❌ 주문 실패:", e.message);
+                alert("주문 처리 중 치명적인 오류가 발생했습니다.");
+            }
+        });
     }
 }
 

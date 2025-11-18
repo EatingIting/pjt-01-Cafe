@@ -133,28 +133,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (orderBtn) {
-        orderBtn.addEventListener("click", async (e) => {
-            e.preventDefault(); // a 태그 기본 이동 막기
+    function moveToMenuImmediate() {
+        // 1. HTML에 숨겨진 hidden input 찾기 (스크린샷에 있는 그 태그!)
+        const storeNameInput = document.getElementById('layoutStoreName');
+        const storeName = storeNameInput ? storeNameInput.value : null;
 
-            // 1) 로그인 여부 확인 (Thymeleaf 변수 IS_LOGGED_IN 활용)
-            // IS_LOGGED_IN은 HTML 상단 script 태그에 선언되어 있어야 합니다.
+        // 2. 값이 있는지 확인
+        if (storeName && storeName.trim() !== '' && storeName !== 'null') {
+            console.log("✅ 선택된 매장(화면):", storeName);
+            // 매장이 있으니 바로 메뉴판으로 이동
+            window.location.href = '/menu/coffee';
+        } else {
+            console.log("❌ 매장 정보 없음");
+            alert("주문할 매장을 먼저 선택해주세요.");
+            window.location.href = '/home/';
+        }
+    }
+
+    if (orderBtn) {
+        orderBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            // 1) 로그인 여부 확인 (기존 로직 유지)
             if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
                 const loginModalOverlay = document.getElementById("login-modal-overlay");
                 if (loginModalOverlay) {
                     loginModalOverlay.classList.add("show");
-                    // 모달 닫기 버튼 이벤트 연결 (한 번만 연결되도록 체크 필요하지만 간단히 추가)
                     const closeBtn = document.getElementById("login-modal-close");
                     if(closeBtn) closeBtn.onclick = () => loginModalOverlay.classList.remove("show");
                 } else {
                     alert("로그인이 필요합니다.");
-                    window.location.href = "/home/"; // 또는 로그인 페이지
+                    window.location.href = "/home/";
                 }
-                return; // 로그인 안 했으면 여기서 중단
+                return;
             }
 
-            // 2) 로그인 했다면 -> 지점 확인 후 이동 함수 호출
-            await moveToMenuBySession();
+            // 2) 로그인 통과 시 -> 화면 값 읽어서 바로 이동
+            moveToMenuImmediate();
         });
     }
 

@@ -3,6 +3,9 @@
 <link rel="stylesheet" href="/css/order_detail.css">
 <th:block th:replace="~{./include/userBaseLayout :: setContent( ~{:: .wrap} ) }">
     <div class="wrap">
+        <input type="hidden" id="detailStoreName" th:value="${storeName}">
+        <input type="hidden" id="detailMemberId"
+               th:value="${#authentication.name != 'anonymousUser' ? #authentication.name : 'guest'}">
         <div class="coffee-img">
             <img th:src="@{|/images/img/${menu.menuImg}|}"
                th:alt="${menu.menuName}">

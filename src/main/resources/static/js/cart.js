@@ -204,6 +204,13 @@ document.addEventListener('DOMContentLoaded', function() {
         let orderItems = [];
         let totalQty = 0;
 
+        console.log("--------------------------------");
+        console.log("🛒 [JS 데이터 점검]");
+        console.log("1. 매장명(HTML hidden):", storeNameInput);
+        console.log("2. 매장명(Value):", storeName);
+        console.log("3. 주문자 ID:", currentUserId);
+        console.log("--------------------------------");
+
         // 1. 체크된 장바구니 아이템들을 하나씩 순회하며 데이터 추출
         selectedItems.forEach(function(checkbox) {
             let item = checkbox.closest('.cart-item');
