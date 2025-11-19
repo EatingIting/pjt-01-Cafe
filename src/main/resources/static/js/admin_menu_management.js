@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     //가격 입력 자동 포맷팅
-
     const menuPriceInput = document.getElementById('menuPrice');
 
     function formatPriceInput(event) {
@@ -32,20 +31,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    //상세 옵션 토글 (행 클릭)
 
+    // 🔥 상세 옵션 토글 (충돌 제거 후 정상 작동)
     document.querySelectorAll(".menu-row").forEach(row => {
-        row.addEventListener("click", function () {
-            const nextRow = this.nextElementSibling;
-            if (nextRow.classList.contains("detail-row")) {
-                nextRow.style.display = nextRow.style.display === "none" ? "table-row" : "none";
-            }
+        row.addEventListener("click", (e) => {
+
+            // 체크박스 td (0번째 칸) 클릭 시 제외
+            if (e.target.closest("td")?.cellIndex === 0) return;
+
+            // 삭제 버튼 클릭 시 제외
+            if (e.target.classList.contains("delete-btn")) return;
+
+            const detailRow = row.nextElementSibling;
+            if (!detailRow) return;
+
+            const isOpen = detailRow.style.display === "table-row";
+            detailRow.style.display = isOpen ? "none" : "table-row";
         });
     });
 
 
     // 판매 상태 저장
-
     document.querySelectorAll(".status-save-btn").forEach((btn, index) => {
         btn.addEventListener("click", function () {
             let detailRow = this.closest(".detail-row");
@@ -67,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // 개별 삭제
-
     document.querySelector('.menu-table').addEventListener('click', function(e) {
         if (e.target.classList.contains('delete-btn')) {
             e.stopPropagation();
@@ -133,13 +138,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // 테이블 정렬 기능 추가
+    // 테이블 정렬 기능
     const table = document.querySelector(".menu-table");
     const headers = table.querySelectorAll("thead th");
     let sortStatus = {};
 
     headers.forEach((header, idx) => {
-        if (idx === 4) return; // 삭제 열 정렬 제외
+        if (idx === 4) return;
         header.style.cursor = "pointer";
         header.addEventListener("click", () => sortTable(idx));
     });
