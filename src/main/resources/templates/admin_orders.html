@@ -14,7 +14,12 @@
 <th:block th:replace="~{./include/adminBaseLayout :: setContent( ~{:: .wrap} ) }">
 
     <div class="wrap">
-        <div id="center-toast" class="center-toast">새로운 주문이 도착했습니다!</div>
+        <div class="notification-icon" id="notification-trigger">
+            <div class="notification-popup" id="notification-popup">
+                <div class="popup-arrow"></div> <p>주문내역이 없습니다.</p>
+            </div>
+        </div>
+
         <main class="main-content">
             <h2 class="main-title">주문 목록</h2>
 
@@ -230,18 +235,12 @@
         // 5. 알림 팝업
         // ---------------------------
         function showNotification(message) {
-            const toast = document.getElementById('center-toast');
+            notificationPopup.querySelector('p').innerText = message;
+            notificationPopup.classList.add('show');
 
-            // 메시지 설정 (필요 시)
-            if(message) toast.innerText = message;
-
-            // 보이게 하기
-            toast.classList.add('show');
-
-            // 2.5초 뒤에 사라지게 하기
             setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+                notificationPopup.classList.remove('show');
+            }, 3000);
         }
 
         // ---------------------------
