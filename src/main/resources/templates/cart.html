@@ -43,8 +43,9 @@
                                 <span class="checkmark item-checkbox"></span>
                             </label>
 
-                            <img th:src="@{|/images/img/${item['MENU_IMG']}|}"
-                                 th:alt="${item['MENU_NAME']}" class="item-img">
+                            <img th:src="@{|/upload/${item['MENU_IMG']}|}"
+                                 th:alt="${item['MENU_NAME']}"
+                                 class="menu-image">
 
                             <div class="item-details">
                                 <span class="item-temp"
