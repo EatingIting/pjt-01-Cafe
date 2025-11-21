@@ -60,6 +60,7 @@ public class SseEmitterStore {
                 emitter.send(SseEmitter.event().name(eventName).data(data));
             } catch (Exception e) {
                 emitter.complete();
+                removeEmitter(map, key, emitter);
             }
         }
     }

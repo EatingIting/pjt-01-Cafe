@@ -28,6 +28,8 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpServletResponse response,
             Authentication authentication) throws IOException {
 
+        rememberMeServices.loginSuccess(request, response, authentication); //Remember-me 쿠키 생성
+
         // 여기서 getName() 은 CustomOAuth2UserService 에서 principal name 으로 사용한 "email" (가상 이메일)
         String email = authentication.getName();
         MemberVO member = memberMapper.findByEmail(email);
