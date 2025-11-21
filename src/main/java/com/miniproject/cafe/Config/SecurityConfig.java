@@ -5,6 +5,7 @@ import com.miniproject.cafe.Handler.FormLoginFailureHandler;
 import com.miniproject.cafe.Handler.FormLoginSuccessHandler;
 import com.miniproject.cafe.Handler.OAuth2FailureHandler;
 import com.miniproject.cafe.Handler.OAuthLoginSuccessHandler;
+import com.miniproject.cafe.Mapper.AdminMapper;
 import com.miniproject.cafe.Mapper.MemberMapper;
 import com.miniproject.cafe.Service.CustomOAuth2UserService;
 import com.miniproject.cafe.Service.CustomUserDetailsService;
@@ -30,6 +31,7 @@ public class SecurityConfig {
     private final FormLoginFailureHandler formLoginFailureHandler;
 
     private final MemberMapper memberMapper;
+    private final AdminMapper adminMapper; // [추가] 필터에 넘겨주기 위해 주입
 
     private static final String REMEMBER_ME_KEY = "secure-key";
 
@@ -39,7 +41,7 @@ public class SecurityConfig {
                 REMEMBER_ME_KEY,
                 customUserDetailsService
         );
-        services.setAlwaysRemember(false); // 체크박스 상태 따름
+        services.setAlwaysRemember(false);
         services.setTokenValiditySeconds(60 * 60 * 24 * 14);
         services.setCookieName("remember-me");
         services.setParameter("remember-me");
@@ -114,7 +116,8 @@ public class SecurityConfig {
                         .rememberMeServices(rememberMeServices())
                 )
 
-                .addFilterAfter(new SessionSetupFilter(memberMapper), SecurityContextHolderFilter.class);
+                // [수정] SessionSetupFilter에 adminMapper도 함께 전달
+                .addFilterAfter(new SessionSetupFilter(memberMapper, adminMapper), SecurityContextHolderFilter.class);
 
         return http.build();
     }
