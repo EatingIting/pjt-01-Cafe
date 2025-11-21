@@ -121,25 +121,38 @@ public class SecurityConfig {
 
         http
                 .securityMatcher("/admin/**")
+<<<<<<< HEAD
+=======
+                .authenticationProvider(adminProvider())
+>>>>>>> 457d39da115abf25e08a216329a8489a66fdd8c6
                 .csrf(csrf -> csrf.disable())
                 .authenticationProvider(adminProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+<<<<<<< HEAD
                                 "/admin/login",
                                 "/admin/signup",
                                 "/admin/joinForm",
                                 "/admin/checkId",
                                 "/admin/css/**",
                                 "/admin/js/**"
+=======
+                                "/admin/login", "/admin/signup", "/admin/joinForm",
+                                "/admin/checkId", "/admin/css/**", "/admin/js/**"
+>>>>>>> 457d39da115abf25e08a216329a8489a66fdd8c6
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/perform_login_process")
+<<<<<<< HEAD
                         .usernameParameter("id")
                         .passwordParameter("pw")
                         .defaultSuccessUrl("/admin/orders", false)
+=======
+                        .defaultSuccessUrl("/admin/orders", true)
+>>>>>>> 457d39da115abf25e08a216329a8489a66fdd8c6
                         .failureHandler(formLoginFailureHandler)
                 )
                 .logout(logout -> logout

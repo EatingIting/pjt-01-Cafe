@@ -63,9 +63,15 @@ public class AdminController {
 
     @GetMapping("/orders")
     public String adminOrders(HttpSession session, Model model) {
+<<<<<<< HEAD
 //        if (session.getAttribute("admin") == null) {
 //            return "redirect:/admin/login";
 //        }
+=======
+        if (session.getAttribute("admin") == null) {
+            return "redirect:/admin/login";
+        }
+>>>>>>> 457d39da115abf25e08a216329a8489a66fdd8c6
         model.addAttribute("isLoggedIn", true);
         model.addAttribute("activePage", "orders");
         return "admin_orders";
