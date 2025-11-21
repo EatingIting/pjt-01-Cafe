@@ -1,6 +1,6 @@
 package com.miniproject.cafe.Controller;
 
-import com.miniproject.cafe.Service.CustomUserDetailsService;
+import com.miniproject.cafe.Service.CouponService;
 import com.miniproject.cafe.Service.OrderService;
 import com.miniproject.cafe.Service.RewardService;
 import com.miniproject.cafe.Service.UserLikeService;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Map;
-
 import java.util.List;
 
 @Controller
@@ -28,32 +27,47 @@ public class HomeController {
     private final UserLikeService userLikeService;
     private final OrderService orderService;
     private final RewardService rewardService;
+    private final CouponService couponService;
 
+    // 로그인 체크 유틸리티 메서드
+    private boolean isLoggedIn(Authentication auth) {
+        return auth != null && auth.isAuthenticated();
+    }
+
+    private String getMemberId(Authentication auth) {
+        return isLoggedIn(auth) ? auth.getName() : null;
+    }
 
     @GetMapping("/")
-    public String home(Model model, Authentication auth, Principal principal) {
-        boolean isLoggedIn = (auth != null && auth.isAuthenticated());
+    public String home(Model model, Authentication auth) {
+        boolean isLoggedIn = isLoggedIn(auth);
         model.addAttribute("IS_LOGGED_IN", isLoggedIn);
-        if(principal != null) {
-            String memberId = principal.getName();
+
+        if(isLoggedIn) {
+            String memberId = getMemberId(auth);
             List<RecentOrderVO> recentOrders = orderService.getRecentOrders(memberId);
             model.addAttribute("recentOrders", recentOrders);
-            // ✅ reward 정보 추가
             RewardVO reward = rewardService.getReward(memberId);
             model.addAttribute("reward", reward);
+            int couponCount = couponService.getCouponsByUser(memberId).size();
+            model.addAttribute("couponCount", couponCount);
         }
+
         return "main";
     }
 
     @GetMapping("/order_history")
-    public String order_history(Model model, Principal principal) {
+    public String order_history(Model model, Authentication auth) {
+        boolean isLoggedIn = isLoggedIn(auth);
+        model.addAttribute("IS_LOGGED_IN", isLoggedIn);
 
-        if (principal != null) {
-            String memberId = principal.getName();
-            // 전체 주문 내역 조회
-            List<RecentOrderVO> allOrders = orderService.getAllOrders(memberId);
-            model.addAttribute("allOrders", allOrders);
+        if (!isLoggedIn(auth)) {
+            return "redirect:/home/";
         }
+
+        String memberId = getMemberId(auth);
+        List<RecentOrderVO> allOrders = orderService.getAllOrders(memberId);
+        model.addAttribute("allOrders", allOrders);
 
         return "order_history";
     }
@@ -65,14 +79,15 @@ public class HomeController {
 
     @GetMapping("/mypick")
     public String myPickPage(Model model, Authentication auth) {
+        boolean isLoggedIn = isLoggedIn(auth);
+        model.addAttribute("IS_LOGGED_IN", isLoggedIn);
 
-        if(auth == null || !auth.isAuthenticated()) {
-            return "redirect:/login";
+        if(!isLoggedIn(auth)) {
+            return "redirect:/home/";
         }
 
-        String userId = auth.getName();
+        String userId = getMemberId(auth);
         List<MenuVO> likedMenus = userLikeService.getLikedMenus(userId);
-
         model.addAttribute("likedMenus", likedMenus);
 
         return "mypick";
@@ -95,19 +110,30 @@ public class HomeController {
     @GetMapping("/getRegion")
     @ResponseBody
     public String getRegion(HttpSession session) {
-
         Object storeName = session.getAttribute("storeName");
-
         return storeName != null ? storeName.toString() : null;
     }
 
     @GetMapping("/account")
     public String account(Authentication auth, HttpSession session, Model model) {
-        if(auth == null || !auth.isAuthenticated()) {
+        boolean isLoggedIn = isLoggedIn(auth);
+        model.addAttribute("IS_LOGGED_IN", isLoggedIn);
+
+        if(!isLoggedIn(auth)) {
             return "redirect:/home/";
         }
+
         MemberVO member = (MemberVO) session.getAttribute("member");
+        if (member == null) {
+            return "redirect:/home/login";
+        }
+
         model.addAttribute("member", member);
         return "mypage";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 }

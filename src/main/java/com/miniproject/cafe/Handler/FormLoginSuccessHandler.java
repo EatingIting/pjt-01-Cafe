@@ -7,33 +7,37 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.FlashMap;
-import org.springframework.web.servlet.support.SessionFlashMapManager;
+import org.springframework.security.web.authentication.RememberMeServices;
 
-import java.io.IOException;
-
-@Component
 @RequiredArgsConstructor
 public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final MemberMapper memberMapper;
+    private final RememberMeServices rememberMeServices;
 
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
             HttpServletResponse response,
-            Authentication authentication) throws IOException {
+            Authentication authentication) {
 
+        // remember-me 쿠키 발행
+        rememberMeServices.loginSuccess(request, response, authentication);
+
+        // 사용자 정보 조회
         String email = authentication.getName();
         MemberVO member = memberMapper.findByEmail(email);
 
-        FlashMap flash = new FlashMap();
-        flash.put("loginSuccessType", "general");
-        flash.put("loginMemberName", member.getUsername());
-        request.getSession().setAttribute("member", member);
-        new SessionFlashMapManager().saveOutputFlashMap(flash, request, response);
+        if (member != null) {
+            request.getSession().setAttribute("member", member);
+        }
 
-        response.sendRedirect("/home/");
+        // 로그인 성공 후 redirect + 파라미터 전달
+        try {
+            response.sendRedirect("/home/?loginSuccess=true&username=" +
+                    java.net.URLEncoder.encode(member.getUsername(), "UTF-8"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
