@@ -4,6 +4,7 @@ import com.miniproject.cafe.Handler.FormLoginFailureHandler;
 import com.miniproject.cafe.Handler.FormLoginSuccessHandler;
 import com.miniproject.cafe.Handler.OAuth2FailureHandler;
 import com.miniproject.cafe.Handler.OAuthLoginSuccessHandler;
+import com.miniproject.cafe.Mapper.MemberMapper;
 import com.miniproject.cafe.Service.CustomOAuth2UserService;
 import com.miniproject.cafe.Service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +27,27 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final FormLoginFailureHandler formLoginFailureHandler;
     private final FormLoginSuccessHandler formLoginSuccessHandler;
-    private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+
+    private final MemberMapper memberMapper;
+
+    private static final String REMEMBER_ME_KEY = "secure-key";
+
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        TokenBasedRememberMeServices services = new TokenBasedRememberMeServices(
+                REMEMBER_ME_KEY,
+                customUserDetailsService
+        );
+        services.setAlwaysRemember(true);
+        services.setTokenValiditySeconds(60 * 60 * 24 * 14);
+        services.setCookieName("remember-me");
+        return services;
+    }
+
+    @Bean
+    public OAuthLoginSuccessHandler oAuthLoginSuccessHandler() {
+        return new OAuthLoginSuccessHandler(memberMapper, rememberMeServices());
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -59,7 +82,7 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )
-                        .successHandler(oAuthLoginSuccessHandler)
+                        .successHandler(oAuthLoginSuccessHandler())
                         .failureHandler(oAuth2FailureHandler)
                 )
 
@@ -73,11 +96,7 @@ public class SecurityConfig {
 
                 // remember-me (폼 + OAuth2 모두에 적용됨)
                 .rememberMe(r -> r
-                        .key("secure-key")
-                        .rememberMeParameter("remember-me")
-                        .tokenValiditySeconds(60 * 60 * 24 * 14)   // 14일
-                        .alwaysRemember(true)                     // 체크박스 상관없이 항상 remember-me
-                        .userDetailsService(customUserDetailsService)
+                        .rememberMeServices(rememberMeServices()) // 위에서 만든 Bean 사용
                 );
 
         return http.build();

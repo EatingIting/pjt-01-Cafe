@@ -79,13 +79,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             );
         }
 
-        // 3. DB에 저장·로그인에 사용할 "가상 이메일" 생성
-        //    예) kakao_1234567890@oauth.com / naver_abcd@oauth.com …
+        // DB에 저장·로그인에 사용할 "가상 이메일" 생성
+        // kakao_1234567890@oauth.com / naver_abcd@oauth.com
         String loginEmail = provider + "_" + providerId + "@oauth.com";
 
-        // 4. Attribute에 우리가 쓰는 값들 정리
-        //    - email    : 로그인 키로 사용하는 가상 이메일
-        //    - realEmail: 실제 소셜 이메일(있으면)
         customAttributes.put("email", loginEmail);
         if (originalEmail != null) {
             customAttributes.put("realEmail", originalEmail);
@@ -94,35 +91,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             customAttributes.put("name", username);
         }
 
-        // 5. DB 조회 (loginEmail 기준)
         MemberVO found = memberMapper.findByEmail(loginEmail);
 
         if (found != null) {
-            // 이미 같은 provider + providerId 로 가입된 회원 → 그대로 로그인
-            return new DefaultOAuth2User(
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                    customAttributes,
-                    "email"     // principal name attribute key
-            );
+            return new CustomUserDetails(found, customAttributes);
         }
 
-        // 6. 신규 회원 자동 가입
         MemberVO newMember = new MemberVO();
-        newMember.setEmail(loginEmail);   // 로그인/remember-me 에 사용할 키
-        newMember.setId(loginEmail);      // ID도 동일하게 사용
+        newMember.setEmail(loginEmail);
+        newMember.setId(loginEmail);
         newMember.setUsername(username != null ? username : loginEmail);
         newMember.setProvider(provider);
         newMember.setPassword(passwordEncoder.encode(UUID.randomUUID().toString())); // 랜덤 비밀번호
 
-        // 필요하다면 MemberVO에 realEmail 컬럼을 추가해서 originalEmail 저장도 가능
-        // newMember.setRealEmail(originalEmail);
-
         memberMapper.insertOAuthMember(newMember);
 
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                customAttributes,
-                "email"
-        );
+        return new CustomUserDetails(newMember, customAttributes);
     }
 }
