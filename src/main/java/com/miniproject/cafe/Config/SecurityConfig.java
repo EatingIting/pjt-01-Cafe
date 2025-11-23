@@ -103,8 +103,7 @@ public class SecurityConfig {
         return s;
     }
 
-    @Bean("adminRememberMeServices")
-    public RememberMeServices adminRememberMeServices() {
+    private RememberMeServices adminRememberMeServices() {
         TokenBasedRememberMeServices services =
                 new TokenBasedRememberMeServices("secure-key", adminUserDetailsService);
         services.setCookieName("remember-me-admin");
