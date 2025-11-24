@@ -1,3 +1,10 @@
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll("input[name='couponIds']").forEach(cb => {
+        cb.removeAttribute('disabled');
+    });
+});
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
     /* ---------------------------------------
@@ -269,14 +276,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        if (checked.length >= drinkCount) {
-            couponCheckboxes.forEach(cb => {
-                if (!cb.checked) cb.disabled = true;
-            });
-        } else {
-            couponCheckboxes.forEach(cb => cb.disabled = false);
+        if (checked.length > drinkCount) {
+            alert("음료 수량보다 많은 쿠폰을 선택할 수 없습니다.");
+            checked[checked.length - 1].checked = false;
         }
     }
+
 
 
     /* ---------------------------------------

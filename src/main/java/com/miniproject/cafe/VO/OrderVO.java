@@ -31,7 +31,7 @@ public class OrderVO {
     private String uId; //사용자아이디
 
     private String username; //사용자명
-    
+
     private String orderStatus;
 
     private List<OrderItemVO> orderItemList;
@@ -42,4 +42,6 @@ public class OrderVO {
     private String requestText;
 
     private List<Integer> couponIds;
+
+    private String couponIdString;
 }
