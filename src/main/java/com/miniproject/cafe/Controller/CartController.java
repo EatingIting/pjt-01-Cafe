@@ -1,7 +1,9 @@
 package com.miniproject.cafe.Controller;
 
 import com.miniproject.cafe.Service.CartService;
+import com.miniproject.cafe.Service.CouponService;
 import com.miniproject.cafe.VO.CartItemVO;
+import com.miniproject.cafe.VO.CouponVO;
 import com.miniproject.cafe.VO.MemberVO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,30 +26,50 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private CouponService couponService;
+
+    // HomeController와 동일한 로그인 체크 메서드
+    // Security 인증 객체로 로그인 여부 체크 (뷰 접근 제어용)
+    private boolean isLoggedIn(Authentication auth) {
+        return auth != null && auth.isAuthenticated();
+    }
+
+    private String getMemberId(HttpSession session) {
+        Object id = session.getAttribute("LOGIN_USER_ID");
+        return (id != null) ? id.toString() : null;
+    }
+
     @GetMapping("/cart")
     public String cartPage(Authentication auth, Model model, HttpSession session) {
+        boolean loggedIn = isLoggedIn(auth);
+        model.addAttribute("IS_LOGGED_IN", loggedIn);
 
-        if (auth == null || !auth.isAuthenticated()) {
+        // 로그인 안 되어 있으면 홈으로
+        if (!loggedIn) {
+            return "redirect:/home/";
+        }
+
+        // 세션에서 memberId 가져오기 (member PK)
+        String memberId = getMemberId(session);
+        if (memberId == null) {
+            // 세션에 memberId 없으면 강제로 로그아웃 처리 후 홈으로 보내도 됨
             return "redirect:/home/";
         }
 
         String currentStore = (String) session.getAttribute("storeName");
         model.addAttribute("storeName", currentStore);
 
-        String memberId = auth.getName();
         Map<String, Object> cartData;
-
         try {
-            // 6. 장바구니 데이터 조회
             cartData = cartService.getCartList(memberId);
 
-            // ✅ 빈 데이터 / 오류 데이터 필터링 로직
             if (cartData != null && cartData.get("cartItems") != null) {
-                List<Map<String, Object>> cartItems = (List<Map<String, Object>>) cartData.get("cartItems");
+                List<Map<String, Object>> cartItems =
+                        (List<Map<String, Object>>) cartData.get("cartItems");
                 List<Map<String, Object>> validItems = new ArrayList<>();
 
                 for (Map<String, Object> item : cartItems) {
-                    // 가격 데이터 유효성 체크
                     if (item.get("MENU_PRICE") != null &&
                             Integer.parseInt(item.get("MENU_PRICE").toString()) > 0) {
                         validItems.add(item);
@@ -55,7 +78,6 @@ public class CartController {
                 cartData.put("cartItems", validItems);
             }
 
-            // 데이터가 아예 없을 경우 초기화
             if (cartData == null) {
                 cartData = new HashMap<>();
                 cartData.put("cartItems", new ArrayList<>());
@@ -69,12 +91,23 @@ public class CartController {
             cartData.put("totalPrice", 0);
         }
 
-        // 7. 뷰(HTML)로 데이터 전달
+        List<CouponVO> coupons = couponService.getCouponsByUser(memberId);
+        model.addAttribute("coupons", coupons);
+
+        if (coupons != null && !coupons.isEmpty()) {
+            LocalDate earliest = coupons.stream()
+                    .map(CouponVO::getExpireDate)
+                    .min(LocalDate::compareTo)
+                    .orElse(null);
+
+            model.addAttribute("earliestExpireDate", earliest);
+        }
+
         model.addAttribute("cartItems", cartData.get("cartItems"));
         model.addAttribute("totalPrice", cartData.get("totalPrice"));
         model.addAttribute("memberId", memberId);
 
-        return "cart"; // user/cart.html 반환
+        return "cart";
     }
 
     @GetMapping("/cart/list/{memberId}")
@@ -89,7 +122,6 @@ public class CartController {
         return cartService.addCartItem(cartItemVO);
     }
 
-    // 아이템 개별 삭제
     @DeleteMapping("/cart/items/{cartItemId}")
     @ResponseBody
     public ResponseEntity<String> deleteCartItem(@PathVariable long cartItemId) {
@@ -104,7 +136,6 @@ public class CartController {
         }
     }
 
-    // 수량 변경
     @PatchMapping("/cart/items/{cartItemId}")
     @ResponseBody
     public ResponseEntity<String> changeQuantityCartItem(@PathVariable long cartItemId,
@@ -116,21 +147,29 @@ public class CartController {
         return ResponseEntity.badRequest().body("change fail");
     }
 
-    // 장바구니에 추가
     @PostMapping("/cart/add")
     @ResponseBody
     public Map<String, Object> addToCart(@RequestBody Map<String, Object> cartData,
-                                         Authentication auth) {
+                                         Authentication auth,
+                                         HttpSession session) {
         Map<String, Object> result = new HashMap<>();
 
-        if (auth == null || !auth.isAuthenticated()) {
+        // 1차: Security 기준 로그인 체크
+        if (!isLoggedIn(auth)) {
             result.put("success", false);
             result.put("message", "로그인이 필요합니다.");
             return result;
         }
 
+        // 2차: 세션에 memberId(LOGIN_USER_ID)가 있는지 확인
+        String memberId = getMemberId(session);
+        if (memberId == null) {
+            result.put("success", false);
+            result.put("message", "세션 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
+            return result;
+        }
+
         try {
-            String memberId = auth.getName();
             String menuId = (String) cartData.get("menuId");
             int quantity = Integer.parseInt(cartData.get("quantity").toString());
             String temp = (String) cartData.get("temp");
@@ -139,7 +178,6 @@ public class CartController {
             int vanillaSyrupCount = Integer.parseInt(cartData.get("vanillaSyrupCount").toString());
             int whippedCreamCount = Integer.parseInt(cartData.get("whippedCreamCount").toString());
 
-            // CartService의 addToCart 메서드 호출 (다음에 구현)
             int addResult = cartService.addToCart(memberId, menuId, quantity, temp,
                     tumblerUse, shotCount, vanillaSyrupCount, whippedCreamCount);
 

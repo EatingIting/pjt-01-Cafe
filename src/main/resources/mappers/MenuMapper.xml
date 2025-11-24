@@ -60,7 +60,9 @@
             STORE_NAME AS storeName
         FROM MENU
         WHERE MENU_ID = #{menuId}
+          AND STORE_NAME = #{storeName}
     </select>
+
 
 
     <update id="updateMenu" parameterType="com.miniproject.cafe.VO.MenuVO">
@@ -125,5 +127,11 @@
           AND STORE_NAME = #{storeName}
     </update>
 
+    <select id="searchMenu" resultType="com.miniproject.cafe.VO.MenuVO">
+        SELECT *
+        FROM menu
+        WHERE store_name = #{storeName}
+          AND menu_name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.miniproject.cafe.Impl;
 
 import com.miniproject.cafe.Emitter.SseEmitterStore;
+import com.miniproject.cafe.Mapper.CouponMapper;
 import com.miniproject.cafe.Mapper.OrderDetailMapper;
 import com.miniproject.cafe.Mapper.OrderMapper;
 import com.miniproject.cafe.Service.OrderService;
@@ -27,6 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private RewardService rewardService;
+
+    @Autowired
+    private CouponMapper couponMapper;
 
 
     @Override
@@ -59,10 +63,14 @@ public class OrderServiceImpl implements OrderService {
             orderMapper.insertOrderDetails(items);
         }
 
+        if (order.getCouponIds() != null && !order.getCouponIds().isEmpty()) {
+            useCoupons(order.getCouponIds());
+        }
+
         // 전체 주문 불러오기
         OrderVO fullOrder = orderMapper.findOrderById(order.getOrderId(), order.getStoreName());
 
-        // ⭐ 관리자에게 이벤트 발송 (sendToStore 사용)
+        // 관리자에게 이벤트 발송 (sendToStore 사용)
         emitterStore.sendToStore(order.getStoreName(), "new-order", fullOrder);
 
         return fullOrder;
@@ -82,17 +90,18 @@ public class OrderServiceImpl implements OrderService {
         // 변경된 주문 불러오기
         OrderVO updatedOrder = orderMapper.findOrderById(orderId, storeName);
 
-        // ⭐ 관리자에게 상태 변경 이벤트
-        emitterStore.sendToStore(storeName, "order-update", updatedOrder);
+        if ("주문완료".equals(status) && updatedOrder.getUId() != null) {
+            rewardService.addStamps(updatedOrder.getUId(), updatedOrder.getTotalQuantity());
+        }
 
-        // ⭐ 고객에게 주문완료 SSE 전달
-        if ("주문완료".equals(status)) {
-            emitterStore.sendToUser(updatedOrder.getUId(), "order-complete", updatedOrder);
+        try {
+            emitterStore.sendToStore(storeName, "order-update", updatedOrder);
 
-            // 스탬프 적립
-            if (updatedOrder.getUId() != null) {
-                rewardService.addStamps(updatedOrder.getUId(), updatedOrder.getTotalQuantity());
+            if ("주문완료".equals(status)) {
+                emitterStore.sendToUser(updatedOrder.getUId(), "order-complete", updatedOrder);
             }
+        } catch (Exception e) {
+            System.out.println("⚠️ 주문 상태 변경 알림 전송 실패(무시됨): " + e.getMessage());
         }
     }
 
@@ -110,5 +119,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderVO getOrderById(Long orderId) {
         return orderMapper.selectOrderById(orderId);
+    }
+
+    @Override
+    public void useCoupons(List<Integer> couponIds) {
+        couponMapper.markUsedMultiple(couponIds);
     }
 }

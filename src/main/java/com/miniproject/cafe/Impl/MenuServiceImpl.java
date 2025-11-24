@@ -46,12 +46,19 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuVO getMenuById(String menuId) {
-        return menuMapper.getMenuById(menuId);
+    public MenuVO getMenuById(String menuId, String storeName) {
+        return menuMapper.getMenuById(menuId, storeName);
     }
 
     @Override
     public void updateMenu(MenuVO menuVO) {
         menuMapper.updateMenu(menuVO);
     }
+
+    @Override
+    public List<MenuVO> searchMenu(String storeName, String keyword) {
+        return menuMapper.searchMenu(storeName, keyword);
+    }
+
+
 }
