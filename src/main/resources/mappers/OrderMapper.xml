@@ -19,6 +19,8 @@
         <result property="dailyOrderNum" column="daily_order_num"/>
         <result property="requestText" column="request_text"/>
 
+        <result property="couponIdString" column="coupon_ids"/>
+
         <collection property="orderItemList" ofType="OrderItemVO">
             <id property="orderItemId" column="order_detail_id"/>
             <result property="orderId" column="order_id"/>
@@ -46,7 +48,8 @@
         o.store_name,
         o.total_quantity,
         o.daily_order_num,
-        o.request_text,     <!-- ★ 추가 -->
+        o.request_text,
+        o.coupon_ids,
 
         od.order_detail_id,
         od.menu_id,
@@ -77,7 +80,8 @@
                             request_text,
                             total_quantity,
                             order_status,
-                            daily_order_num
+                            daily_order_num,
+                            coupon_ids
         )
         VALUES (#{uId},
                 #{totalPrice},
@@ -91,7 +95,8 @@
                  FROM orders o2
                  WHERE DATE(o2.order_time) = CURDATE()
                  AND o2.store_name = #{storeName}
-            )
+            ),
+            #{couponIdString}
             )
     </insert>
 
@@ -142,7 +147,8 @@
         o.store_name,
         o.total_quantity,
         o.daily_order_num,
-        o.request_text,   <!-- ★ 추가 -->
+        o.request_text,
+        o.coupon_ids,
 
         od.order_detail_id,
         od.menu_id,
