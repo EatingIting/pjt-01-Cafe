@@ -27,26 +27,19 @@ public class FormLoginFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(
             HttpServletRequest request,
             HttpServletResponse response,
-            AuthenticationException exception) throws IOException {
+            AuthenticationException exception) {
 
-        // 1. 상태 코드 401 (Unauthorized) 설정
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-
-        // 2. 에러 메시지 판별
         String errorMessage = "로그인에 실패했습니다.";
-        if (exception instanceof BadCredentialsException || exception instanceof UsernameNotFoundException) {
+
+        if (exception instanceof BadCredentialsException ||
+                exception instanceof UsernameNotFoundException) {
             errorMessage = "아이디 또는 비밀번호가 일치하지 않습니다.";
-        } else {
-            errorMessage = exception.getMessage();
         }
 
-        // 3. JSON 응답 생성
-        Map<String, Object> data = new HashMap<>();
-        data.put("message", errorMessage);
-        data.put("error", true);
+        request.getSession().setAttribute("loginError", errorMessage);
 
-        objectMapper.writeValue(response.getWriter(), data);
+        try {
+            response.sendRedirect("/admin/login");
+        } catch (Exception ignored) {}
     }
 }

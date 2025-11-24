@@ -104,15 +104,6 @@ public class SecurityConfig {
         return s;
     }
 
-    @Bean
-    public RememberMeServices adminRememberMeServices() {
-        TokenBasedRememberMeServices s =
-                new TokenBasedRememberMeServices("secure-key", adminUserDetailsService);
-        s.setCookieName("remember-me-admin");
-        s.setTokenValiditySeconds(60 * 60 * 24 * 14);
-        return s;
-    }
-
     /* ======================
         관리자 Security
     ======================= */
@@ -149,7 +140,14 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me-admin")
                 )
-                .rememberMe(r -> r.rememberMeServices(adminRememberMeServices()))
+                .rememberMe(r -> r
+                        .key("admin-secure-key")
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds(60 * 60 * 24 * 14)
+                        .userDetailsService(adminUserDetailsService)
+                        .authenticationSuccessHandler(rememberMeSuccessHandler)
+                        .rememberMeCookieName("remember-me-admin")
+                )
                 .addFilterAfter(new SessionSetupFilter(memberMapper, adminMapper),
                         RememberMeAuthenticationFilter.class);
 

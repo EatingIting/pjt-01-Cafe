@@ -63,19 +63,36 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String adminOrders(Model model, Principal principal) {
+    public String adminOrders(HttpSession session, Model model, Principal principal) {
 
-        // 1. 현재 로그인한 사용자 확인 (Spring Security)
-        if (principal != null) {
+        AdminVO admin = null;
+
+        // 1) 세션에서 먼저 찾기 (SessionSetupFilter가 세팅했을 경우)
+        admin = (AdminVO) session.getAttribute("admin");
+
+        // 2) 세션에 없으면 principal에서 가져와서 DB 재조회
+        if (admin == null && principal != null) {
             String loginId = principal.getName();
-            AdminVO admin = adminService.findById(loginId);
-            // 3. 모델에 storeName 담기
+            admin = adminService.findById(loginId);
+
+            // 찾았다면 세션에 다시 넣어 데이터 유지
             if (admin != null) {
-                model.addAttribute("storeName", admin.getStoreName());
+                session.setAttribute("admin", admin);
             }
         }
+
+        // 최종적으로도 null이면 로그인 페이지로
+        if (admin == null) {
+            return "redirect:/admin/login";
+        }
+
+        // storeName 모델에 주입
+        model.addAttribute("storeName", admin.getStoreName());
+
+        // UI 표시용
         model.addAttribute("isLoggedIn", true);
         model.addAttribute("activePage", "orders");
+
         return "admin_orders";
     }
 

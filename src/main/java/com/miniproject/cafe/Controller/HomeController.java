@@ -41,18 +41,28 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model, Authentication auth) {
-        boolean isLoggedIn = isLoggedIn(auth);
+    public String home(Model model, Authentication auth, HttpSession session) {
+
+        boolean isLoggedIn = auth != null && auth.isAuthenticated();
         model.addAttribute("IS_LOGGED_IN", isLoggedIn);
 
-        if(isLoggedIn) {
-            String memberId = getMemberId(auth);
-            List<RecentOrderVO> recentOrders = orderService.getRecentOrders(memberId);
-            model.addAttribute("recentOrders", recentOrders);
-            RewardVO reward = rewardService.getReward(memberId);
-            model.addAttribute("reward", reward);
-            int couponCount = couponService.getCouponsByUser(memberId).size();
-            model.addAttribute("couponCount", couponCount);
+        if (isLoggedIn) {
+            String email = auth.getName();
+
+            // 세션에 member가 없으면 자동 로그인 상황 → DB에서 재조회
+            MemberVO sessionMember = (MemberVO) session.getAttribute("member");
+            if (sessionMember == null) {
+                sessionMember = memberMapper.findByEmail(email);
+                session.setAttribute("member", sessionMember);
+            }
+
+            if (sessionMember != null) {
+                String memberId = sessionMember.getId();
+
+                model.addAttribute("recentOrders", orderService.getRecentOrders(memberId));
+                model.addAttribute("reward", rewardService.getReward(memberId));
+                model.addAttribute("couponCount", couponService.getCouponsByUser(memberId).size());
+            }
         }
 
         return "main";

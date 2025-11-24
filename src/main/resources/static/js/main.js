@@ -47,33 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const orderBtn            = document.getElementById('orderBtn');
 
     /* ============================================================
-       3. 로그인 / 회원가입 모달 열기/닫기
-    ============================================================ */
-    if (loginModalTrigger && loginModalOverlay) {
-        loginModalTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginModalOverlay.classList.add('show');
-        });
-    }
-    if (loginModalClose && loginModalOverlay) {
-        loginModalClose.addEventListener('click', () => {
-            loginModalOverlay.classList.remove('show');
-        });
-    }
-    if (signupModalClose && signupModalOverlay) {
-        signupModalClose.addEventListener('click', () => {
-            signupModalOverlay.classList.remove('show');
-        });
-    }
-    if (switchToSignupBtn && loginModalOverlay && signupModalOverlay) {
-        switchToSignupBtn.addEventListener('click', () => {
-            loginModalOverlay.classList.remove('show');
-            signupModalOverlay.classList.add('show');
-        });
-    }
-
-    /* ============================================================
-       4. 헤더 종모양 알림 팝업
+       3. 헤더 종모양 알림 팝업
     ============================================================ */
     if (notificationTrigger && notificationPopup) {
         notificationTrigger.addEventListener('click', (e) => {
@@ -92,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ============================================================
-       5. 매장 선택 초기화 (세션값 → selectbox)
+       4. 매장 선택 초기화 (세션값 → selectbox)
     ============================================================ */
     async function initRegionSelect() {
         if (!userRegion) return;
@@ -111,40 +85,66 @@ document.addEventListener('DOMContentLoaded', () => {
     initRegionSelect();
 
     /* ============================================================
-       6. SSE 연결 (사용자용)
+       5. SSE 연결 (사용자용)
     ============================================================ */
-    function connectSSE(url) {
-        let es = new EventSource(url);
-        es.onopen = () => console.log("[USER SSE] Connected");
-        es.onerror = () => { es.close(); };
+    let userEventSource = null; // 중복 연결 방지용 변수
 
+    function connectSSE(url) {
+        if (userEventSource) {
+            userEventSource.close();
+        }
+
+        console.log(`🔌 [SSE] 사용자 연결 시도: ${url}`);
+        let es = new EventSource(url);
+        userEventSource = es;
+
+        es.onopen = () => console.log("🟢 [SSE] 사용자 알림 서비스 연결됨");
+
+        // 에러 발생 시 재연결 로직
+        es.onerror = () => {
+            // console.log("🔴 [SSE] 연결 끊김. 재연결 시도...");
+            es.close();
+            // 3초 후 재연결 (initUserSSE 다시 호출)
+            setTimeout(initUserSSE, 3000);
+        };
+
+        // 주문 완료 이벤트 수신
         es.addEventListener("order-complete", async (event) => {
+            console.log("🔔 주문 완료 알림 도착:", event.data);
             const order = JSON.parse(event.data);
-            const menuName = order.orderItemList?.[0]?.menuItemName || "";
+
+            // 메뉴 이름 추출 (없으면 기본값)
+            const menuName = order.orderItemList?.[0]?.menuItemName || "메뉴";
+            const extraCount = (order.orderItemList?.length || 1) - 1;
+            const title = extraCount > 0 ? `${menuName} 외 ${extraCount}건` : menuName;
+
             const dailyNum = String(order.dailyOrderNum).padStart(4, "0");
 
-            showToast(`${menuName} 주문이 완료되었습니다.\n음식을 찾아가세요!`);
+            // 토스트 메시지 띄우기
+            showToast(`주문번호 ${dailyNum}\n${title} 이(가) 준비되었습니다!\n음식을 찾아가세요!`);
+
+            // 알림창 업데이트
             showAlarmDot();
-            addNotificationCard(dailyNum, menuName);
+            addNotificationCard(dailyNum, title);
+
+            // 주문 내역 새로고침
             await loadUserOrders();
         });
+
         return es;
     }
 
-    async function initUserSSE() {
+    function initUserSSE() {
         if (typeof IS_LOGGED_IN === 'undefined' || !IS_LOGGED_IN) return;
         if (typeof USER_ID === 'undefined' || !USER_ID) return;
-
-        const regionResp = await fetch("/home/getRegion");
-        const storeName = await regionResp.text();
-        if (!storeName || storeName === "null" || storeName.trim() === "") return;
-
         connectSSE(`/sse/user/${USER_ID}`);
     }
+
+    // 페이지 로드 시 즉시 실행
     initUserSSE();
 
     /* ============================================================
-       7. 이전 주문 내역 로딩
+       6. 이전 주문 내역 로딩
     ============================================================ */
     async function loadUserOrders() {
         if (typeof USER_ID === 'undefined' || !USER_ID) return;
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ============================================================
-       8. 지역 선택 변경 시 세션에 저장
+       7. 지역 선택 변경 시 세션에 저장
     ============================================================ */
     if (userRegion) {
         userRegion.addEventListener("change", () => {
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ============================================================
-       9. 주문하기 버튼 (로그인 + 매장 선택 체크)
+       8. 주문하기 버튼 (로그인 + 매장 선택 체크)
     ============================================================ */
     async function checkAndGoToMenu() {
         try {
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ============================================================
-       11. 초기 알림 상태 점검
+       9. 초기 알림 상태 점검
     ============================================================ */
     checkEmptyNotifications();
     document.querySelectorAll(".notification-card").forEach(card => {
@@ -369,11 +369,13 @@ window.addEventListener('resize', setVh);
 document.addEventListener("DOMContentLoaded", () => {
     const couponEl = document.getElementById("coupon-count");
 
-    couponEl.addEventListener("click", () => {
-        if (!IS_LOGGED_IN) {
-            alert("로그인이 필요합니다.");
-            return;
-        }
-        location.href = "/home/coupon";  // 쿠폰 페이지 이동
-    });
+    if (couponEl) {
+        couponEl.addEventListener("click", () => {
+            if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+            location.href = "/home/coupon";  // 쿠폰 페이지 이동
+        });
+    }
 });
