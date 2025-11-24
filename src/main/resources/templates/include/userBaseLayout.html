@@ -15,7 +15,7 @@
     <th:block th:if="${IS_LOGGED_IN == true}">
         <script th:inline="javascript">
             const IS_LOGGED_IN = true;
-            const USER_ID = /*[[${LOGIN_USER_ID}]]*/ null;
+            const USER_ID = /*[[${session.LOGIN_USER_ID}]]*/ null;
         </script>
     </th:block>
 

@@ -2,22 +2,6 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Java Coffee</title>
-
-    <!-- 로그인 여부 JS 전달 -->
-    <th:block th:if="${IS_LOGGED_IN}">
-        <script th:inline="javascript">
-            const IS_LOGGED_IN = true;
-            const USER_ID = [[${#authentication.name}]];
-        </script>
-    </th:block>
-
-    <th:block th:if="${!IS_LOGGED_IN}">
-        <script>
-            const IS_LOGGED_IN = false;
-            const USER_ID = null;
-        </script>
-    </th:block>
-
     <!-- 로그인 실패 시 메시지 -->
     <script th:if="${loginErrorMessage}">
         alert('[[${loginErrorMessage}]]');
