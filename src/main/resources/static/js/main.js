@@ -121,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 주문 완료 이벤트 수신
         es.addEventListener("order-complete", async (event) => {
-            console.log("🔔 주문 완료 알림 도착:", event.data);
             const order = JSON.parse(event.data);
 
             const menuName = order.orderItemList?.[0]?.menuItemName || "메뉴";
