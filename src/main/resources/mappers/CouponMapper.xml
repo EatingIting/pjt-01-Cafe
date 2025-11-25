@@ -27,4 +27,23 @@
         WHERE coupon_id = #{couponId}
     </update>
 
+    <update id="markUsedMultiple">
+        UPDATE coupon
+        SET used = 1
+        WHERE coupon_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="restoreCoupons">
+        UPDATE coupon
+        SET used = 0
+        WHERE coupon_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
 </mapper>

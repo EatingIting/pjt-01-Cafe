@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.Collections;
 
 @Controller
@@ -31,8 +32,22 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    @GetMapping({"", "/", "/index"})
+    public String adminRoot() {
+        return "redirect:/admin/orders";
+    }
+
     @GetMapping("/login")
-    public String adminLogin(HttpSession session, Model model) {
+    public String adminLogin(HttpSession session, Model model, Authentication auth) {
+        if (auth != null && auth.isAuthenticated()) {
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (isAdmin) {
+                return "redirect:/admin/orders";
+            }
+        }
+
         if (session.getAttribute("loginError") != null) {
             model.addAttribute("loginError", session.getAttribute("loginError"));
             session.removeAttribute("loginError");
@@ -62,12 +77,31 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String adminOrders(HttpSession session, Model model) {
-//        if (session.getAttribute("admin") == null) {
-//            return "redirect:/admin/login";
-//        }
+    public String adminOrders(HttpSession session, Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/admin/login";
+        }
+
+        AdminVO admin = (AdminVO) session.getAttribute("admin");
+
+        if (admin == null) {
+            String loginId = principal.getName();
+            admin = adminService.findById(loginId); // DB 조회
+
+            if (admin != null) {
+                session.setAttribute("admin", admin); // 세션 복구
+                session.setAttribute("STORE_NAME", admin.getStoreName());
+                System.out.println("♻️ 관리자 세션 자동 복구 완료: " + loginId);
+            } else {
+                // DB에도 없으면 로그아웃
+                return "redirect:/admin/logout";
+            }
+        }
+
+        model.addAttribute("storeName", admin.getStoreName());
         model.addAttribute("isLoggedIn", true);
         model.addAttribute("activePage", "orders");
+
         return "admin_orders";
     }
 

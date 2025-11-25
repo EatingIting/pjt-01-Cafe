@@ -15,7 +15,7 @@
     <th:block th:if="${IS_LOGGED_IN == true}">
         <script th:inline="javascript">
             const IS_LOGGED_IN = true;
-            const USER_ID = /*[[${LOGIN_USER_ID}]]*/ null;
+            const USER_ID = /*[[${session.LOGIN_USER_ID}]]*/ null;
         </script>
     </th:block>
 
@@ -117,6 +117,12 @@
                 </th:block>
 
             </nav>
+        </div>
+    </div>
+    <div id="custom-toast" class="toast-hidden">
+        <div class="toast-body">
+            <i class="fa-solid fa-check-circle toast-icon"></i>
+            <span id="toast-text">메시지 내용</span>
         </div>
     </div>
     <script src="/js/main.js"></script>

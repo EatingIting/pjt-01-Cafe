@@ -1,7 +1,9 @@
 package com.miniproject.cafe.Controller;
 
 import com.miniproject.cafe.Service.CartService;
+import com.miniproject.cafe.Service.CouponService;
 import com.miniproject.cafe.VO.CartItemVO;
+import com.miniproject.cafe.VO.CouponVO;
 import com.miniproject.cafe.VO.MemberVO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,36 +26,47 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private CouponService couponService;
+
     // HomeController와 동일한 로그인 체크 메서드
+    // Security 인증 객체로 로그인 여부 체크 (뷰 접근 제어용)
     private boolean isLoggedIn(Authentication auth) {
         return auth != null && auth.isAuthenticated();
     }
 
-    private String getMemberId(Authentication auth) {
-        return isLoggedIn(auth) ? auth.getName() : null;
+    private String getMemberId(HttpSession session) {
+        Object id = session.getAttribute("LOGIN_USER_ID");
+        return (id != null) ? id.toString() : null;
     }
 
     @GetMapping("/cart")
     public String cartPage(Authentication auth, Model model, HttpSession session) {
-        boolean isLoggedIn = isLoggedIn(auth);
-        model.addAttribute("IS_LOGGED_IN", isLoggedIn);
+        boolean loggedIn = isLoggedIn(auth);
+        model.addAttribute("IS_LOGGED_IN", loggedIn);
 
-        // HomeController와 동일한 방식으로 로그인 체크
-        if (!isLoggedIn(auth)) {
+        // 로그인 안 되어 있으면 홈으로
+        if (!loggedIn) {
+            return "redirect:/home/";
+        }
+
+        // 세션에서 memberId 가져오기 (member PK)
+        String memberId = getMemberId(session);
+        if (memberId == null) {
+            // 세션에 memberId 없으면 강제로 로그아웃 처리 후 홈으로 보내도 됨
             return "redirect:/home/";
         }
 
         String currentStore = (String) session.getAttribute("storeName");
         model.addAttribute("storeName", currentStore);
 
-        String memberId = getMemberId(auth);
         Map<String, Object> cartData;
-
         try {
             cartData = cartService.getCartList(memberId);
 
             if (cartData != null && cartData.get("cartItems") != null) {
-                List<Map<String, Object>> cartItems = (List<Map<String, Object>>) cartData.get("cartItems");
+                List<Map<String, Object>> cartItems =
+                        (List<Map<String, Object>>) cartData.get("cartItems");
                 List<Map<String, Object>> validItems = new ArrayList<>();
 
                 for (Map<String, Object> item : cartItems) {
@@ -75,6 +89,18 @@ public class CartController {
             cartData = new HashMap<>();
             cartData.put("cartItems", new ArrayList<>());
             cartData.put("totalPrice", 0);
+        }
+
+        List<CouponVO> coupons = couponService.getCouponsByUser(memberId);
+        model.addAttribute("coupons", coupons);
+
+        if (coupons != null && !coupons.isEmpty()) {
+            LocalDate earliest = coupons.stream()
+                    .map(CouponVO::getExpireDate)
+                    .min(LocalDate::compareTo)
+                    .orElse(null);
+
+            model.addAttribute("earliestExpireDate", earliest);
         }
 
         model.addAttribute("cartItems", cartData.get("cartItems"));
@@ -124,18 +150,26 @@ public class CartController {
     @PostMapping("/cart/add")
     @ResponseBody
     public Map<String, Object> addToCart(@RequestBody Map<String, Object> cartData,
-                                         Authentication auth) {
+                                         Authentication auth,
+                                         HttpSession session) {
         Map<String, Object> result = new HashMap<>();
 
-        // HomeController 방식으로 체크
+        // 1차: Security 기준 로그인 체크
         if (!isLoggedIn(auth)) {
             result.put("success", false);
             result.put("message", "로그인이 필요합니다.");
             return result;
         }
 
+        // 2차: 세션에 memberId(LOGIN_USER_ID)가 있는지 확인
+        String memberId = getMemberId(session);
+        if (memberId == null) {
+            result.put("success", false);
+            result.put("message", "세션 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
+            return result;
+        }
+
         try {
-            String memberId = getMemberId(auth);
             String menuId = (String) cartData.get("menuId");
             int quantity = Integer.parseInt(cartData.get("quantity").toString());
             String temp = (String) cartData.get("temp");

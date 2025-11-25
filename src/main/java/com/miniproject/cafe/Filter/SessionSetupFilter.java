@@ -2,6 +2,7 @@ package com.miniproject.cafe.Filter;
 
 import com.miniproject.cafe.Mapper.AdminMapper;
 import com.miniproject.cafe.Mapper.MemberMapper;
+import com.miniproject.cafe.Service.CustomUserDetails;
 import com.miniproject.cafe.VO.AdminVO;
 import com.miniproject.cafe.VO.MemberVO;
 import jakarta.servlet.FilterChain;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -21,39 +23,68 @@ import java.io.IOException;
 public class SessionSetupFilter extends OncePerRequestFilter {
 
     private final MemberMapper memberMapper;
-    private final AdminMapper adminMapper; // [추가] 관리자 매퍼
+    private final AdminMapper adminMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 1. 현재 스프링 시큐리티 상에서 인증된 사용자인지 확인 (Remember-Me로 복구된 상태 포함)
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
 
-            HttpSession session = request.getSession();
-            String principalName = auth.getName(); // ID 또는 Email
+            HttpSession session = request.getSession(true);
+            Object principal = auth.getPrincipal();
+            String loginId = auth.getName();
 
-            // 2. 권한 확인 (관리자 vs 일반 회원)
+            // 1. 관리자 (ROLE_ADMIN)
             boolean isAdmin = auth.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
             if (isAdmin) {
-                // === [관리자] 세션 복구 ===
                 if (session.getAttribute("admin") == null) {
-                    // AdminMapper에 아이디로 조회하는 메서드(findById)가 있다고 가정
-                    AdminVO admin = adminMapper.findById(principalName);
+                    AdminVO admin = null;
+                    if (principal instanceof AdminVO) {
+                        admin = (AdminVO) principal;
+                    } else if (principal instanceof UserDetails) {
+                        admin = adminMapper.findById(((UserDetails) principal).getUsername());
+                    } else {
+                        admin = adminMapper.findById(loginId);
+                    }
+
                     if (admin != null) {
                         session.setAttribute("admin", admin);
+                        session.setAttribute("STORE_NAME", admin.getStoreName());
                     }
                 }
-            } else {
-                // === [일반 회원] 세션 복구 ===
+            }
+            // 2. 일반 회원 (ROLE_USER 등)
+            else {
                 if (session.getAttribute("member") == null) {
-                    MemberVO member = memberMapper.findByEmail(principalName);
+                    MemberVO member = null;
+
+                    // Case A: 로그인 직후 (객체)
+                    if (principal instanceof MemberVO) {
+                        member = (MemberVO) principal;
+                    }
+                    // Case B: CustomUserDetails (일반적인 시큐리티 로그인)
+                    else if (principal instanceof CustomUserDetails) {
+                        member = ((CustomUserDetails) principal).getMemberVO();
+                    }
+                    // Case C: Remember-Me 복구 직후 (UserDetails or String)
+                    else if (principal instanceof UserDetails) {
+                        String email = ((UserDetails) principal).getUsername();
+                        member = memberMapper.findByEmail(email);
+                    }
+                    else {
+                        member = memberMapper.findByEmail(loginId);
+                    }
+
+                    // 세션 복구
                     if (member != null) {
                         session.setAttribute("member", member);
+                        session.setAttribute("LOGIN_USER_ID", member.getId());
+                        System.out.println("✅ [Filter] 사용자 세션 복구 완료: " + member.getEmail());
                     }
                 }
             }
