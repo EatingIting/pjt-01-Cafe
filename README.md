@@ -25,7 +25,7 @@ Spring Boot, MyBatis, JavaScript(SSE), Thymeleaf 기반으로 구현한 실시�
 - 주문 카드 실시간 생성
 - 상태 변경 시 SSE 브로드캐스트
 
-![주문관리UI](images/주문관리UI.png)
+![주문관리UI](./src/main/resources/static/images/주문관리UI.png)
 
 ---
 
@@ -142,9 +142,9 @@ Polling 방식보다 훨씬 자연스러운 실시간 경험을 제공할 수 �
 
 ## 9. 이미지
 
-![로그인 화면](images/login.png)
-![주문 화면](images/order1.png)
-![주문 화면2](images/order2.png)
-![주문 화면3](images/order3.png)
-![SSE 실시간 알림](images/sse-realtime.gif)
+![로그인 화면](./src/main/resources/static/images/login.png)
+![주문 화면](./src/main/resources/static/images/order1.png)
+![주문 화면2](./src/main/resources/static/images/order2.png)
+![주문 화면3](./src/main/resources/static/images/order3.png)
+![SSE 실시간 알림](./src/main/resources/static/images/sse-realtime.gif)
 
